@@ -6,11 +6,11 @@ public class Controller {
 
 	public static void main(String[] args) {
 		System.out.println("Start");
-		
+
 		HardwareControl hwc = new HardwareControl();
 		hwc.initLed();
-		//hwc.initLightOnIfDark();
-		
+		// hwc.initLightOnIfDark();
+
 		try {
 			hwc.initSpi();
 			long t = System.currentTimeMillis();

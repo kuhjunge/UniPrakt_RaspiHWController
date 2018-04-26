@@ -23,8 +23,8 @@ public class HardwareControl {
 	// SPI
 	private SpiDevice spi = null;
 	// ADC channel count
-    public static short ADC_CHANNEL_COUNT = 8;  // MCP3004=4, MCP3008=8
-	
+	public static short ADC_CHANNEL_COUNT = 8; // MCP3004=4, MCP3008=8
+
 	public void initLed() {
 		led_pin = gpio.provisionDigitalOutputPin(RaspiPin.GPIO_07, "MyLED", PinState.HIGH);
 		// set shutdown state for this pin
@@ -32,7 +32,7 @@ public class HardwareControl {
 		// turn off gpio pin #01
 		led_pin.setShutdownOptions(true, PinState.LOW);
 	}
-	
+
 	public void initLightOnIfDark() {
 		photo_pin = gpio.provisionDigitalInputPin(RaspiPin.GPIO_28, "MyPhotosensor");
 	}
@@ -52,59 +52,62 @@ public class HardwareControl {
 			led_pin.setState(PinState.LOW);
 		}
 	}
-	
+
 	public void initSpi() throws IOException {
 		System.out.println("init spi");
-		spi = SpiFactory.getInstance(SpiChannel.CS0,
-                SpiDevice.DEFAULT_SPI_SPEED, // default spi speed 1 MHz
-                SpiDevice.DEFAULT_SPI_MODE); // default spi mode 0
+		spi = SpiFactory.getInstance(SpiChannel.CS0, SpiDevice.DEFAULT_SPI_SPEED, // default spi speed 1 MHz
+				SpiDevice.DEFAULT_SPI_MODE); // default spi mode 0
 		System.out.println("init spi finished");
 	}
-	
-    /**
-     * Read data via SPI bus from MCP3002 chip.
-     * @throws IOException
-     */
-    public int read() throws IOException, InterruptedException {
-    	int conversion_value = getConversionValue((short)0);
-    	return (int) analogToLux(conversion_value); 
-    }
 
-    /**
-     * Analog to Lux
-     * @param analog
-     * @return
-     */
-    private double analogToLux(int analog) {
-    	double uldr = analog * 3.3 / 1023;
-    	double rldr = 4.7 * uldr / (3.3 - uldr);
-    	return Math.pow(rldr,-1.31022)*210.91430;
-    }
-    
-    /**
-     * Communicate to the ADC chip via SPI to get single-ended conversion value for a specified channel.
-     * @param channel analog input channel on ADC chip
-     * @return conversion value for specified analog input channel
-     * @throws IOException
-     */
-    public int getConversionValue(short channel) throws IOException {
+	/**
+	 * Read data via SPI bus from MCP3002 chip.
+	 * 
+	 * @throws IOException
+	 */
+	public int read() throws IOException, InterruptedException {
+		int conversion_value = getConversionValue((short) 0);
+		return (int) analogToLux(conversion_value);
+	}
 
-        // create a data buffer and initialize a conversion request payload
-        byte data[] = new byte[] {
-                (byte) 0b00000001,                              // first byte, start bit
-                (byte)(0b10000000 |( ((channel & 7) << 4))),    // second byte transmitted -> (SGL/DIF = 1, D2=D1=D0=0)
-                (byte) 0b00000000                               // third byte transmitted....don't care
-        };
+	/**
+	 * Analog to Lux
+	 * 
+	 * @param analog
+	 * @return
+	 */
+	private double analogToLux(int analog) {
+		double uldr = analog * 3.3 / 1023;
+		double rldr = 4.7 * uldr / (3.3 - uldr);
+		return Math.pow(rldr, -1.31022) * 210.91430;
+	}
 
-        // send conversion request to ADC chip via SPI channel
-        byte[] result = spi.write(data);
+	/**
+	 * Communicate to the ADC chip via SPI to get single-ended conversion value for
+	 * a specified channel.
+	 * 
+	 * @param channel
+	 *            analog input channel on ADC chip
+	 * @return conversion value for specified analog input channel
+	 * @throws IOException
+	 */
+	public int getConversionValue(short channel) throws IOException {
 
-        // calculate and return conversion value from result bytes
-        int value = (result[1]<< 8) & 0b1100000000; //merge data[1] & data[2] to get 10-bit result
-        value |=  (result[2] & 0xff);
-        return value;
-    }
-	
+		// create a data buffer and initialize a conversion request payload
+		byte data[] = new byte[] { (byte) 0b00000001, // first byte, start bit
+				(byte) (0b10000000 | (((channel & 7) << 4))), // second byte transmitted -> (SGL/DIF = 1, D2=D1=D0=0)
+				(byte) 0b00000000 // third byte transmitted....don't care
+		};
+
+		// send conversion request to ADC chip via SPI channel
+		byte[] result = spi.write(data);
+
+		// calculate and return conversion value from result bytes
+		int value = (result[1] << 8) & 0b1100000000; // merge data[1] & data[2] to get 10-bit result
+		value |= (result[2] & 0xff);
+		return value;
+	}
+
 	public void shutdown() {
 		// stop all GPIO activity/threads by shutting down the GPIO controller
 		// (this method will forcefully shutdown all GPIO monitoring threads and
