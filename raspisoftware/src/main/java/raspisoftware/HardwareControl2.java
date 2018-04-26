@@ -1,3 +1,13 @@
+import com.pi4j.gpio.extension.base.AdcGpioProvider;
+import com.pi4j.gpio.extension.mcp.MCP3008GpioProvider;
+import com.pi4j.gpio.extension.mcp.MCP3008Pin;
+import com.pi4j.io.gpio.GpioController;
+import com.pi4j.io.gpio.GpioFactory;
+import com.pi4j.io.gpio.GpioPinAnalogInput;
+import com.pi4j.io.gpio.event.GpioPinAnalogValueChangeEvent;
+import com.pi4j.io.gpio.event.GpioPinListenerAnalog;
+import com.pi4j.io.spi.SpiChannel;
+
 public class HardwareControl2 {
 
   public void test() {
