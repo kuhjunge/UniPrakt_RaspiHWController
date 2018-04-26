@@ -18,7 +18,7 @@ public class Controller {
 			while (System.currentTimeMillis() < end) {
 				// do something
 				// pause to avoid churning
-				hwc.read();
+				hwc.SpilightOnIfDark();
 				Thread.sleep(200);
 			}
 		} catch (InterruptedException | IOException e) {

@@ -45,6 +45,14 @@ public class HardwareControl {
 		}
 	}
 
+	public void SpilightOnIfDark() throws IOException, InterruptedException {
+		if (led_pin != null && read() < 50) {
+			led_pin.setState(PinState.HIGH);
+		} else {
+			led_pin.setState(PinState.LOW);
+		}
+	}
+	
 	public void initSpi() throws IOException {
 		System.out.println("init spi");
 		spi = SpiFactory.getInstance(SpiChannel.CS0,
@@ -57,16 +65,20 @@ public class HardwareControl {
      * Read data via SPI bus from MCP3002 chip.
      * @throws IOException
      */
-    public void read() throws IOException, InterruptedException {
-    	System.out.println("read:");
+    public int read() throws IOException, InterruptedException {
     	int conversion_value = getConversionValue((short)0);
-    	//for(short channel = 0; channel < ADC_CHANNEL_COUNT; channel++){
-         //   int conversion_value = getConversionValue(channel);
-         //   System.out.println(String.format(" | %04d", conversion_value)); // print 4 digits with leading zeros
-       // }
-    	 System.out.println(String.format(" | %04d", conversion_value)); // print 4 digits with leading zeros
-        System.out.println(" |\r");
-        Thread.sleep(250);
+    	return (int) analogToLux(conversion_value); 
+    }
+
+    /**
+     * Analog to Lux
+     * @param analog
+     * @return
+     */
+    private double analogToLux(int analog) {
+    	double uldr = analog * 3.3 / 1023;
+    	double rldr = 4.7 * uldr / (3.3 - uldr);
+    	return Math.pow(rldr,-1.31022)*210.91430;
     }
     
     /**
