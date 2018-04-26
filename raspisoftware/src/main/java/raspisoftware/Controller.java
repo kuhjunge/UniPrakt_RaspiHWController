@@ -5,6 +5,8 @@ import java.io.IOException;
 public class Controller {
 
 	public static void main(String[] args) {
+		System.out.println("Start");
+		
 		HardwareControl hwc = new HardwareControl();
 		hwc.initLed();
 		//hwc.initLightOnIfDark();
@@ -22,6 +24,7 @@ public class Controller {
 		} catch (InterruptedException | IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			System.out.println("Fatal Error");
 		}
 		hwc.shutdown();
 		System.out.println("Exiting ControlGpioExample");
