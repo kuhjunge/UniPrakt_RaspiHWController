@@ -59,10 +59,12 @@ public class HardwareControl {
      */
     public void read() throws IOException, InterruptedException {
     	System.out.println("read:");
-    	for(short channel = 0; channel < ADC_CHANNEL_COUNT; channel++){
-            int conversion_value = getConversionValue(channel);
-            System.out.println(String.format(" | %04d", conversion_value)); // print 4 digits with leading zeros
-        }
+    	int conversion_value = getConversionValue((short)0);
+    	//for(short channel = 0; channel < ADC_CHANNEL_COUNT; channel++){
+         //   int conversion_value = getConversionValue(channel);
+         //   System.out.println(String.format(" | %04d", conversion_value)); // print 4 digits with leading zeros
+       // }
+    	 System.out.println(String.format(" | %04d", conversion_value)); // print 4 digits with leading zeros
         System.out.println(" |\r");
         Thread.sleep(250);
     }
