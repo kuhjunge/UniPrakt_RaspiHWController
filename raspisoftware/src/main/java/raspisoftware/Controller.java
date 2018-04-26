@@ -9,9 +9,10 @@ public class Controller {
 
 		HardwareControl hwc = new HardwareControl();
 		hwc.initLed();
-		// hwc.initLightOnIfDark();
+		hwc.initLightOnIfDark();
 
 		try {
+			// hwc.test();
 			hwc.initSpi();
 			long t = System.currentTimeMillis();
 			long end = t + 30000;

@@ -1,3 +1,7 @@
+package raspisoftware;
+
+import java.io.IOException;
+
 import com.pi4j.gpio.extension.base.AdcGpioProvider;
 import com.pi4j.gpio.extension.mcp.MCP3008GpioProvider;
 import com.pi4j.gpio.extension.mcp.MCP3008Pin;
@@ -10,7 +14,7 @@ import com.pi4j.io.spi.SpiChannel;
 
 public class HardwareControl2 {
 
-  public void test() {
+	public void test() throws IOException, InterruptedException {
   
   // Create gpio controller
   final GpioController gpio = GpioFactory.getInstance();
