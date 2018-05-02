@@ -6,20 +6,15 @@ public class Controller {
 
 	public static void main(String[] args) {
 		System.out.println("Start");
-
 		HardwareControl hwc = new HardwareControl();
 		hwc.initLed();
-		hwc.initLightOnIfDark();
-
 		try {
 			// hwc.test();
-			hwc.initSpi();
+			hwc.initMCP3008();
 			long t = System.currentTimeMillis();
 			long end = t + 30000;
 			while (System.currentTimeMillis() < end) {
-				// do something
 				// pause to avoid churning
-				hwc.SpilightOnIfDark();
 				Thread.sleep(200);
 			}
 		} catch (InterruptedException | IOException e) {
