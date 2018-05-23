@@ -53,7 +53,6 @@ public class G8Controller {
         }
         
         average = average / luxList.size();
-        
         return average;
     }
     
@@ -75,6 +74,7 @@ public class G8Controller {
         
         // calculate average lux value
         double average = averageLux();
+        System.out.println("DER FUCKING MITTELWERT:" + average);
         
         // toggle led
         if (average > 50) {
