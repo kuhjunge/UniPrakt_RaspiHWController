@@ -87,7 +87,7 @@
 								<transformer
 									implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
 									<manifestEntries>
-										<Main-Class>eu.selfhost.suxdorf.G8Controller</Main-Class>
+										<Main-Class>eu.selfhost.suxdorf.mqtt.G8Controller</Main-Class>
 										<Build-Number>1</Build-Number>
 									</manifestEntries>
 								</transformer>
