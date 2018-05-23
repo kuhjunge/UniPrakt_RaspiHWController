@@ -235,7 +235,7 @@ public class G8MqttClient extends MqttClient implements MqttCallback {
     }
 
     public void messageArrived(String arg0, MqttMessage arg1) throws Exception {        
-        if (g8c == null) {
+        if (g8c != null) {
     			g8c.messageIncoming(arg0, arg1.toString());
         } else {
         		System.out.println("Message arrived: <" + arg0 + ">, <" + arg1 + ">");
