@@ -46,7 +46,7 @@
               <transformers>
                 <transformer>
                   <manifestEntries>
-                    <Main-Class>raspisoftware.Controller</Main-Class>
+                    <Main-Class>eu.selfhost.suxdorf.G8Controller</Main-Class>
                     <Build-Number>1</Build-Number>
                   </manifestEntries>
                 </transformer>
@@ -65,6 +65,10 @@
       <id>oss-snapshots-repo</id>
       <name>Sonatype OSS Maven Repository</name>
       <url>https://oss.sonatype.org/content/groups/public</url>
+    </repository>
+    <repository>
+      <id>Eclipse Paho Repo</id>
+      <url>https://repo.eclipse.org/content/repositories/paho-releases/</url>
     </repository>
   </repositories>
 </project>
