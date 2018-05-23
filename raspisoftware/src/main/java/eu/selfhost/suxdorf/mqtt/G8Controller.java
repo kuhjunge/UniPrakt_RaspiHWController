@@ -24,7 +24,7 @@ public class G8Controller {
             // init mqtt client
             // sends and gets lux values
             client = new G8MqttClient(this);
-            client.subscribeTo("/sensornetwork/#", 1);
+            client.subscribeTo("/sensornetwork/+/sensor/brightness", 1);
             // lux value list
             luxList = new ArrayList<Double>();
         } catch (Exception e) {
