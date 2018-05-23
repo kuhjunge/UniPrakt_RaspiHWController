@@ -34,7 +34,7 @@ public class G8MqttClient extends MqttClient implements MqttCallback {
     private static final String CERT_PUBLIC = "ca.crt";
     private static final String CERT_PRIVATE = "group_8.crt";
     private static final String CERT_KEY = "group_8.key";
-    private static final String PATH = "\\home\\pi\\";
+    private static final String PATH = "/home/pi/";
     
     private MqttConnectOptions connectOptions;
     
@@ -60,13 +60,13 @@ public class G8MqttClient extends MqttClient implements MqttCallback {
         // load certificate files from class location
         // throws IOException if any of them isn't available
         URL path = G8MqttClient.class.getResource(CERT_PUBLIC);
-        String cert = path.getFile();
-        
+        String cert = PATH + CERT_PUBLIC;
+            
         path = G8MqttClient.class.getResource(CERT_PRIVATE);
-        String groupcert = path.getFile();
-        
+        String groupcert = PATH + CERT_PRIVATE;
+            
         path = G8MqttClient.class.getResource(CERT_KEY);
-        String groupkey = path.getFile();
+        String groupkey = PATH + CERT_KEY;
         
         System.out.println("certificates loaded");
         
