@@ -58,7 +58,6 @@ public class G8Controller {
     
     // gets called when a new mqtt message arrives
     public void messageIncoming(String arg0, String arg1) {
-    	System.out.println("DER FUCKING MITTELWERT kommt gleich");
         try {
             // try to parse incoming message
             JSONObject json = new JSONObject(arg1);
@@ -75,7 +74,7 @@ public class G8Controller {
         
         // calculate average lux value
         double average = averageLux();
-        System.out.println("DER FUCKING MITTELWERT:" + average);
+        System.out.println("DER MITTELWERT:" + average);
         
         // toggle led
         if (average > 50) {
