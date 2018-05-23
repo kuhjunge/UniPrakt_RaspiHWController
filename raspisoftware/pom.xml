@@ -5,12 +5,13 @@
 	<groupId>de.uni-luebeck</groupId>
 	<artifactId>raspisoftware</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
+
 	<dependencies>
 		<!-- https://mvnrepository.com/artifact/com.pi4j/pi4j-core -->
 		<dependency>
-		    <groupId>com.pi4j</groupId>
-		    <artifactId>pi4j-core</artifactId>
-		    <version>1.2-SNAPSHOT</version>
+			<groupId>com.pi4j</groupId>
+			<artifactId>pi4j-core</artifactId>
+			<version>1.2-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>com.pi4j</groupId>
@@ -34,8 +35,8 @@
 			<artifactId>bcprov-jdk16</artifactId>
 			<version>1.46</version>
 		</dependency>
-		
-				<!-- https://mvnrepository.com/artifact/org.json/json -->
+
+		<!-- https://mvnrepository.com/artifact/org.json/json -->
 		<dependency>
 			<groupId>org.json</groupId>
 			<artifactId>json</artifactId>
@@ -83,6 +84,16 @@
 							<goal>shade</goal>
 						</goals>
 						<configuration>
+							<filters>
+								<filter>
+									<artifact>*:*</artifact>
+									<excludes>
+										<exclude>META-INF/*.SF</exclude>
+										<exclude>META-INF/*.DSA</exclude>
+										<exclude>META-INF/*.RSA</exclude>
+									</excludes>
+								</filter>
+							</filters>
 							<transformers>
 								<transformer
 									implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
@@ -99,19 +110,19 @@
 		</plugins>
 	</build>
 	<repositories>
-	<repository>
-		<id>oss-snapshots-repo</id>
-		<name>Sonatype OSS Maven Repository</name>
-		<url>https://oss.sonatype.org/content/groups/public</url>
-		<snapshots>
-			<enabled>true</enabled>
-			<updatePolicy>always</updatePolicy>
-		</snapshots>
-	</repository>
+		<repository>
+			<id>oss-snapshots-repo</id>
+			<name>Sonatype OSS Maven Repository</name>
+			<url>https://oss.sonatype.org/content/groups/public</url>
+			<snapshots>
+				<enabled>true</enabled>
+				<updatePolicy>always</updatePolicy>
+			</snapshots>
+		</repository>
 		<repository>
 			<id>Eclipse Paho Repo</id>
 			<url>https://repo.eclipse.org/content/repositories/paho-releases/</url>
 		</repository>
-</repositories>
+	</repositories>
 </project>
 
