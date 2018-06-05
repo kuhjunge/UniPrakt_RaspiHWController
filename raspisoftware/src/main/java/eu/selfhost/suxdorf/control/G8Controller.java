@@ -6,6 +6,7 @@ import java.util.List;
 import org.json.JSONObject;
 
 import eu.selfhost.suxdorf.MessageProcessor;
+import eu.selfhost.suxdorf.NetworkMessenger;
 import eu.selfhost.suxdorf.hardware.HardwareControl;
 import eu.selfhost.suxdorf.mqtt.G8MqttClient;
 
@@ -16,7 +17,7 @@ public class G8Controller implements MessageProcessor {
 	}
 
 	private HardwareControl hwc;
-	private G8MqttClient client;
+	private NetworkMessenger client;
 
 	private List<Double> luxList;
 
@@ -28,7 +29,8 @@ public class G8Controller implements MessageProcessor {
 			// init mqtt client
 			// sends and gets lux values
 			client = new G8MqttClient(this);
-			client.subscribeTo("/sensornetwork/+/sensor/brightness", 1);
+			client.addNewMessageListener(this);
+			client.openChannel("/sensornetwork/+/sensor/brightness");
 			// lux value list
 			luxList = new ArrayList<>();
 		} catch (final Exception e) {
@@ -84,7 +86,7 @@ public class G8Controller implements MessageProcessor {
 		dataset.put("value", value);
 		dataset.put("measurement_unit", unit);
 		// send lux value to mqtt broker
-		client.publish("/sensornetwork/group8/sensor/brightness", dataset.toString(), 2, true);
+		client.sendMessage("/sensornetwork/group8/sensor/brightness", dataset.toString());
 	}
 
 	@Override
@@ -100,7 +102,6 @@ public class G8Controller implements MessageProcessor {
 	@Override
 	public void processMessageStringOut(final String topic, final String message) {
 		// TODO Auto-generated method stub
-
 	}
 
 }

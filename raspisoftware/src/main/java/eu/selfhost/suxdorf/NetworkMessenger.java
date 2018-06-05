@@ -2,7 +2,7 @@ package eu.selfhost.suxdorf;
 
 public interface NetworkMessenger {
 
-	void addPropertyChangeListener(MessageProcessor pcl);
+	void addNewMessageListener(MessageProcessor pcl);
 
 	boolean connectClient();
 
@@ -16,7 +16,7 @@ public interface NetworkMessenger {
 
 	void openChannel(String channel, int qos);
 
-	void removePropertyChangeListener(MessageProcessor pcl);
+	void removeNewMessageListener(MessageProcessor pcl);
 
 	void sendMessage(String channel, String message);
 }

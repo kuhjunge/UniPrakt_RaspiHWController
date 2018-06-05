@@ -18,9 +18,10 @@ import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.MqttTopic;
 
 import eu.selfhost.suxdorf.MessageProcessor;
+import eu.selfhost.suxdorf.NetworkMessenger;
 import eu.selfhost.suxdorf.util.SslUtil;
 
-public class G8MqttClient extends MqttClient implements MqttCallback {
+public class G8MqttClient extends MqttClient implements MqttCallback, NetworkMessenger {
 
 	// static configuration
 	// TODO: Load configuration from file
@@ -161,6 +162,17 @@ public class G8MqttClient extends MqttClient implements MqttCallback {
 	}
 
 	@Override
+	public void addNewMessageListener(final MessageProcessor pcl) {
+		mp = pcl;
+	}
+
+	@Override
+	public boolean connectClient() {
+		// TODO: richtige Connect Funktion implementieren
+		return true;
+	}
+
+	@Override
 	public void connectionLost(final Throwable arg0) {
 		System.out.println("Connection lost.");
 
@@ -178,11 +190,31 @@ public class G8MqttClient extends MqttClient implements MqttCallback {
 	}
 
 	@Override
+	public String getUserName() {
+		return USERNAME;
+	}
+
+	@Override
 	public void messageArrived(final String arg0, final MqttMessage arg1) throws Exception {
 		if (mp != null) {
 			mp.processMessageStringIn(arg0, arg1.toString());
 		} else {
 			System.out.println("Message arrived: <" + arg0 + ">, <" + arg1 + ">");
+		}
+	}
+
+	@Override
+	public void openChannel(final String channel) {
+		openChannel(channel, 1);
+	}
+
+	@Override
+	public void openChannel(final String channel, final int qos) {
+		try {
+			subscribeTo(channel, qos);
+		} catch (final MqttException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 
@@ -223,6 +255,17 @@ public class G8MqttClient extends MqttClient implements MqttCallback {
 				// starts the thread
 			}
 		}.start();
+	}
+
+	@Override
+	public void removeNewMessageListener(final MessageProcessor pcl) {
+		mp = null;
+	}
+
+	@Override
+	public void sendMessage(final String channel, final String message) {
+		publish(channel, message, 2, true);
+
 	}
 
 	/**
