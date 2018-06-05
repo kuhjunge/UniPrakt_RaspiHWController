@@ -17,6 +17,7 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.MqttTopic;
 
+import eu.selfhost.suxdorf.MessageProcessor;
 import eu.selfhost.suxdorf.util.SslUtil;
 
 public class G8MqttClient extends MqttClient implements MqttCallback {
@@ -34,7 +35,7 @@ public class G8MqttClient extends MqttClient implements MqttCallback {
 
 	private final MqttConnectOptions connectOptions;
 
-	private G8Controller g8c;
+	private MessageProcessor mp;
 
 	// public constructor, calls private constructor
 	public G8MqttClient() throws MqttException, UnrecoverableKeyException, KeyManagementException, KeyStoreException,
@@ -43,18 +44,18 @@ public class G8MqttClient extends MqttClient implements MqttCallback {
 	}
 
 	// public constructor, calls private constructor
-	public G8MqttClient(final G8Controller g8c) throws MqttException, UnrecoverableKeyException, KeyManagementException,
-			KeyStoreException, NoSuchAlgorithmException, CertificateException, IOException {
+	public G8MqttClient(final MessageProcessor g8c) throws MqttException, UnrecoverableKeyException,
+			KeyManagementException, KeyStoreException, NoSuchAlgorithmException, CertificateException, IOException {
 		this(BROKER_URL, CLIENT_ID);
-		this.g8c = g8c;
+		mp = g8c;
 	}
 
 	// public constructor with last will, calls private constructor
-	public G8MqttClient(final G8Controller g8c, final String topic, final String lastWill, final int qos,
+	public G8MqttClient(final MessageProcessor g8c, final String topic, final String lastWill, final int qos,
 			final boolean retained) throws MqttException, UnrecoverableKeyException, KeyManagementException,
 			KeyStoreException, NoSuchAlgorithmException, CertificateException, IOException {
 		this(BROKER_URL, CLIENT_ID, topic, lastWill, qos, retained);
-		this.g8c = g8c;
+		mp = g8c;
 	}
 
 	// private constructor
@@ -178,8 +179,8 @@ public class G8MqttClient extends MqttClient implements MqttCallback {
 
 	@Override
 	public void messageArrived(final String arg0, final MqttMessage arg1) throws Exception {
-		if (g8c != null) {
-			g8c.messageIncoming(arg0, arg1.toString());
+		if (mp != null) {
+			mp.processMessageStringIn(arg0, arg1.toString());
 		} else {
 			System.out.println("Message arrived: <" + arg0 + ">, <" + arg1 + ">");
 		}
@@ -187,7 +188,7 @@ public class G8MqttClient extends MqttClient implements MqttCallback {
 
 	/**
 	 * Publishes a message to a given topic with QoS level.
-	 * 
+	 *
 	 * @param topic
 	 * @param message
 	 * @param qos
@@ -226,7 +227,7 @@ public class G8MqttClient extends MqttClient implements MqttCallback {
 
 	/**
 	 * Subscribes to a given topic
-	 * 
+	 *
 	 * @param topic
 	 * @throws MqttException
 	 */
@@ -236,7 +237,7 @@ public class G8MqttClient extends MqttClient implements MqttCallback {
 
 	/**
 	 * Subscribes to a given topic with quality of service level
-	 * 
+	 *
 	 * @param topic
 	 * @param qos
 	 * @throws MqttException

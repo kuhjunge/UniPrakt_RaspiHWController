@@ -1,4 +1,4 @@
-package eu.selfhost.suxdorf.mqtt;
+package eu.selfhost.suxdorf.hardware;
 
 import java.io.IOException;
 
@@ -12,12 +12,15 @@ import com.pi4j.io.gpio.GpioPinDigitalInput;
 import com.pi4j.io.gpio.GpioPinDigitalOutput;
 import com.pi4j.io.gpio.PinState;
 import com.pi4j.io.gpio.RaspiPin;
+import com.pi4j.io.gpio.event.GpioPinAnalogValueChangeEvent;
 import com.pi4j.io.gpio.event.GpioPinListenerAnalog;
 import com.pi4j.io.spi.SpiChannel;
 
+import eu.selfhost.suxdorf.MessageProcessor;
+
 public class HardwareControl {
 	// G8Controller
-	G8Controller g8c;
+	MessageProcessor mp;
 	// create gpio controller
 	private final GpioController gpio = GpioFactory.getInstance();
 
@@ -25,8 +28,8 @@ public class HardwareControl {
 	private GpioPinDigitalOutput led_pin;
 	private GpioPinDigitalInput photo_pin;
 
-	public HardwareControl(final G8Controller g8c) throws Exception {
-		this.g8c = g8c;
+	public HardwareControl(final MessageProcessor mp) throws Exception {
+		this.mp = mp;
 		try {
 			initLed();
 			initMCP3008();
@@ -71,18 +74,8 @@ public class HardwareControl {
 		// Messgeschwindigkeit festlegen
 		provider.setMonitorInterval(250);
 
-		// Gibt alle Werte der Inputs aus
-		for (final GpioPinAnalogInput input : inputs) {
-			System.out.println("<INITIAL VALUE> [" + input.getName() + "] : RAW VALUE = " + input.getValue());
-		}
-
 		// Change Listener
-		final GpioPinListenerAnalog listener = event -> {
-			final double value = event.getValue();
-			System.out.println("<CHANGED VALUE> [" + event.getPin().getName() + "] : RAW VALUE = " + value);
-
-			g8c.newValueAvailable(analogToLux(value));
-		};
+		final GpioPinListenerAnalog listener = event -> sendMessage(event);
 
 		// Listener anhängen
 		gpio.addListener(listener, inputs);
@@ -106,6 +99,11 @@ public class HardwareControl {
 		} else {
 			led_pin.setState(PinState.LOW);
 		}
+	}
+
+	private void sendMessage(final GpioPinAnalogValueChangeEvent event) {
+		final double value = event.getValue();
+		mp.processMessageDoubleOut("Lux", analogToLux(value));
 	}
 
 	public void shutdown() {

@@ -1,20 +1,24 @@
-package eu.selfhost.suxdorf.mqtt;
+package eu.selfhost.suxdorf.control;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.json.JSONObject;
 
-public class G8Controller {
+import eu.selfhost.suxdorf.MessageProcessor;
+import eu.selfhost.suxdorf.hardware.HardwareControl;
+import eu.selfhost.suxdorf.mqtt.G8MqttClient;
+
+public class G8Controller implements MessageProcessor {
 
 	public static void main(final String[] args) throws Exception {
 		final G8Controller g8c = new G8Controller();
 	}
 
-	HardwareControl hwc;
-	G8MqttClient client;
+	private HardwareControl hwc;
+	private G8MqttClient client;
 
-	List<Double> luxList;
+	private List<Double> luxList;
 
 	public G8Controller() {
 		try {
@@ -73,14 +77,30 @@ public class G8Controller {
 	}
 
 	// is called when HardwareControl gets a new value from the ldr
-	public void newValueAvailable(final double value) {
+	public void newValueAvailable(final double value, final String unit) {
 		// create json object
 		final JSONObject dataset = new JSONObject();
 		// put ldr value in lux in it
 		dataset.put("value", value);
-		dataset.put("measurement_unit", "Lux");
+		dataset.put("measurement_unit", unit);
 		// send lux value to mqtt broker
 		client.publish("/sensornetwork/group8/sensor/brightness", dataset.toString(), 2, true);
+	}
+
+	@Override
+	public void processMessageDoubleOut(final String topic, final double val) {
+		newValueAvailable(val, topic);
+	}
+
+	@Override
+	public void processMessageStringIn(final String topic, final String message) {
+		messageIncoming(topic, message);
+	}
+
+	@Override
+	public void processMessageStringOut(final String topic, final String message) {
+		// TODO Auto-generated method stub
+
 	}
 
 }
