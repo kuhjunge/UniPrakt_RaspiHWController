@@ -101,7 +101,11 @@ public class G8Controller implements MessageProcessor {
 
 	@Override
 	public void processMessageStringOut(final String topic, final String message) {
-		// TODO Auto-generated method stub
+		final JSONObject dataset = new JSONObject();
+		// put ldr value in lux in it
+		dataset.put("value", message);
+		dataset.put("measurement_unit", topic);
+		// send lux value to mqtt broker
+		client.sendMessage("/sensornetwork/group8/sensor", dataset.toString());
 	}
-
 }
