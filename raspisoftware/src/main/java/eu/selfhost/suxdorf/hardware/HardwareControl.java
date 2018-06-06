@@ -19,6 +19,9 @@ import com.pi4j.io.spi.SpiChannel;
 import eu.selfhost.suxdorf.MessageProcessor;
 
 public class HardwareControl {
+	
+	public static String PIN0 = "MyAnalogInput-CH0";
+	public static String PIN1 = "MyAnalogInput-CH1";
 	// G8Controller
 	MessageProcessor mp;
 	// create gpio controller
@@ -68,8 +71,8 @@ public class HardwareControl {
 		final AdcGpioProvider provider = new MCP3008GpioProvider(SpiChannel.CS0);
 		// Input Pin am MCP3008 festlegen
 		final GpioPinAnalogInput inputs[] = {
-				gpio.provisionAnalogInputPin(provider, MCP3008Pin.CH0, "MyAnalogInput-CH0"),
-				gpio.provisionAnalogInputPin(provider, MCP3008Pin.CH1, "MyAnalogInput-CH1") };
+				gpio.provisionAnalogInputPin(provider, MCP3008Pin.CH0, PIN0),
+				gpio.provisionAnalogInputPin(provider, MCP3008Pin.CH1, PIN1) };
 		// Schwellwert bevor Event ausgelöst wird
 		provider.setEventThreshold(100, inputs);
 		// Messgeschwindigkeit festlegen
@@ -104,10 +107,10 @@ public class HardwareControl {
 
 	private void sendMessage(final GpioPinAnalogValueChangeEvent event) {
 		System.out.println(event.getPin());
-		if (event.getPin() == MCP3008Pin.CH0) {
+		if (event.getPin().toString().equals(PIN0)) {
 			final double value = event.getValue();
 			mp.processMessageDoubleOut("Lux", analogToLux(value),"brightness");
-		} else if(event.getPin() == MCP3008Pin.CH1) {
+		} else if(event.getPin().toString().equals(PIN1)) {
 			final double value = event.getValue();
 			mp.processMessageDoubleOut("Hall", value,"hall");
 		}
