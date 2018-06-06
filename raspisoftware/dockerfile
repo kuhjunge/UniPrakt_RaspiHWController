@@ -1,0 +1,31 @@
+FROM resin/rpi-raspbian:latest
+MAINTAINER Chris Deter <chris.deter@student.uni-luebeck.de>
+
+# Install dependencies
+RUN apt-get -q update && \
+    apt-get -qy install curl ca-certificates \
+	git-core oracle-java8-jdk build-essential \
+	sudo wget librxtx-java
+# WiringPi
+RUN git clone git://git.drogon.net/wiringPi && cd wiringPi &&  ./build
+
+# PI4J
+RUN curl -s get.pi4j.com | bash
+
+#433Mhz (https://tutorials-raspberrypi.de/raspberry-pis-ueber-433mhz-funk-kommunizieren-lassen/)
+RUN git clone https://github.com/ninjablocks/433Utils.git --recursive && cd 433Utils/RPi_utils && make all
+
+WORKDIR ~/software/UniPrakt_RaspiHWController/raspisoftware/target/
+ADD raspisoftware-0.0.1-SNAPSHOT.jar raspisoftware-0.0.1-SNAPSHOT.jar
+
+#EXPOSE 3000
+
+CMD java - jar raspisoftware-0.0.1-SNAPSHOT.jar
+# ENTRYPOINT ["/bin/sh", "-c"]
+ENTRYPOINT ["/bin/sh", "/433Utils/RPi_utils/RFSniffer"]
+#CMD ["gpio readall"]
+
+#docker build -t unilubecktest .
+#docker ps -a
+#docker commit drunk_tesla mycentosimage
+#docker run -it --privileged mycentosimage bash
