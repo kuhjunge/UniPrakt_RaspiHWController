@@ -32,7 +32,7 @@ public class G8MqttClient extends MqttClient implements MqttCallback, NetworkMes
 	private static final String CERT_PUBLIC = "ca.crt";
 	private static final String CERT_PRIVATE = "group_8.crt";
 	private static final String CERT_KEY = "group_8.key";
-	private static final String PATH = "/home/pi/";
+	private static final String PATH = "/app";
 
 	private final MqttConnectOptions connectOptions;
 
