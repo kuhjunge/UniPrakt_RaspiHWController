@@ -79,19 +79,19 @@ public class G8Controller implements MessageProcessor {
 	}
 
 	// is called when HardwareControl gets a new value from the ldr
-	public void newValueAvailable(final double value, final String unit) {
+	public void newValueAvailable(final double value, final String unit, final String topic) {
 		// create json object
 		final JSONObject dataset = new JSONObject();
 		// put ldr value in lux in it
 		dataset.put("value", value);
 		dataset.put("measurement_unit", unit);
 		// send lux value to mqtt broker
-		client.sendMessage("/sensornetwork/group8/sensor/brightness", dataset.toString());
+		client.sendMessage("/sensornetwork/group8/sensor/"+topic, dataset.toString());
 	}
 
 	@Override
-	public void processMessageDoubleOut(final String topic, final double val) {
-		newValueAvailable(val, topic);
+	public void processMessageDoubleOut(final String topic, final double val, final String unit) {
+		newValueAvailable(val, topic, unit);
 	}
 
 	@Override

@@ -102,8 +102,14 @@ public class HardwareControl {
 	}
 
 	private void sendMessage(final GpioPinAnalogValueChangeEvent event) {
-		final double value = event.getValue();
-		mp.processMessageDoubleOut("Lux", analogToLux(value));
+		
+		if (event.getPin() == MCP3008Pin.CH0) {
+			final double value = event.getValue();
+			mp.processMessageDoubleOut("Lux", analogToLux(value),"brightness");
+		} else if(event.getPin() == MCP3008Pin.CH1) {
+			final double value = event.getValue();
+			mp.processMessageDoubleOut("Hall", value,"hall");
+		}
 	}
 
 	public void shutdown() {

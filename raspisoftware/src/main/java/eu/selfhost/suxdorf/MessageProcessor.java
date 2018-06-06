@@ -1,7 +1,7 @@
 package eu.selfhost.suxdorf;
 
 public interface MessageProcessor {
-	void processMessageDoubleOut(final String topic, final double val);
+	void processMessageDoubleOut(final String topic, final double val, final String unit);
 
 	void processMessageStringIn(final String topic, final String message);
 
