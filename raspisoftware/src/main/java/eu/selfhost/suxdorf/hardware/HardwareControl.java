@@ -68,7 +68,8 @@ public class HardwareControl {
 		final AdcGpioProvider provider = new MCP3008GpioProvider(SpiChannel.CS0);
 		// Input Pin am MCP3008 festlegen
 		final GpioPinAnalogInput inputs[] = {
-				gpio.provisionAnalogInputPin(provider, MCP3008Pin.CH0, "MyAnalogInput-CH0"), };
+				gpio.provisionAnalogInputPin(provider, MCP3008Pin.CH0, "MyAnalogInput-CH0"),
+				gpio.provisionAnalogInputPin(provider, MCP3008Pin.CH1, "MyAnalogInput-CH1") };
 		// Schwellwert bevor Event ausgelöst wird
 		provider.setEventThreshold(100, inputs);
 		// Messgeschwindigkeit festlegen
@@ -102,7 +103,7 @@ public class HardwareControl {
 	}
 
 	private void sendMessage(final GpioPinAnalogValueChangeEvent event) {
-		
+		System.out.println(event.getPin());
 		if (event.getPin() == MCP3008Pin.CH0) {
 			final double value = event.getValue();
 			mp.processMessageDoubleOut("Lux", analogToLux(value),"brightness");

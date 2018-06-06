@@ -41,7 +41,7 @@ public class G8Controller implements MessageProcessor {
 
 	// calculates the average lux value above the last 20 lux values
 	private double averageLux() {
-		double average = 0;
+		double average = 0.0;
 		for (final double v : luxList) {
 			average += v;
 		}
@@ -91,7 +91,7 @@ public class G8Controller implements MessageProcessor {
 
 	@Override
 	public void processMessageDoubleOut(final String topic, final double val, final String unit) {
-		newValueAvailable(val, topic, unit);
+		newValueAvailable(val, unit, topic);
 	}
 
 	@Override
