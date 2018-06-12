@@ -2,9 +2,10 @@ package eu.selfhost.suxdorf.control;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.json.JSONObject;
-
 import eu.selfhost.suxdorf.MessageProcessor;
 import eu.selfhost.suxdorf.NetworkMessenger;
 import eu.selfhost.suxdorf.hardware.HardwareControl;
@@ -13,12 +14,12 @@ import eu.selfhost.suxdorf.mqtt.G8MqttClient;
 public class G8Controller implements MessageProcessor {
 
 	public static void main(final String[] args) throws Exception {
-		final G8Controller g8c = new G8Controller();
+		new G8Controller(); // Starte 
 	}
 
+	private static final Logger LOG = Logger.getLogger(G8Controller.class.getName());
 	private HardwareControl hwc;
 	private NetworkMessenger client;
-
 	private List<Double> luxList;
 
 	public G8Controller() {
@@ -34,7 +35,7 @@ public class G8Controller implements MessageProcessor {
 			// lux value list
 			luxList = new ArrayList<>();
 		} catch (final Exception e) {
-			e.printStackTrace();
+			LOG.log(Level.SEVERE, "Could not start!", e);
 			System.exit(1);
 		}
 	}
@@ -62,20 +63,18 @@ public class G8Controller implements MessageProcessor {
 				luxList.remove(0);
 			}
 		} catch (final Exception e) {
-			System.out.println(e);
+			LOG.log(Level.WARNING, "Could not Parse XML", e);
 		}
 
 		// calculate average lux value
 		final double average = averageLux();
-		System.out.println("DER MITTELWERT:" + average);
+		LOG.log(Level.WARNING, "DER MITTELWERT:" + average);
 		// toggle led
 		if (average > 50) {
 			hwc.ledOff();
 		} else {
 			hwc.ledOn();
 		}
-		// print average lux to console
-		System.out.println(average);
 	}
 
 	// is called when HardwareControl gets a new value from the ldr
