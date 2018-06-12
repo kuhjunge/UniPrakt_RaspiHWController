@@ -31,14 +31,7 @@ public class G8Controller implements MessageProcessor {
 
 	public G8Controller() {
 		try {
-			// Load Config
-			conf = new Configuration("MQTTDataDealer", "/app/");
-			conf.setValue(serverAddr, "tcp://127.0.0.1:1883");
-			conf.setValue(user, "admin");
-			conf.setValue(pw, "");
-			conf.setValue(certPath, "");
-			conf.init();
-			conf.save();
+			loadConfig();
 			// init hardware controller
 			// reads ldr values
 			hwc = new HardwareControl(this);
@@ -47,15 +40,30 @@ public class G8Controller implements MessageProcessor {
 			client = new MQTTAsyncChat(conf.getValue(user), conf.getValue(pw), conf.getValue(serverAddr),
 					conf.getValue(certPath), "{\"message\": \"" + conf.getValue(user) + " out!\"}",
 					"/sensornetwork/" + conf.getValue(user) + "/status", conf.getValue(user) + Math.random());
+			// set Communication interface
 			client.addNewMessageListener(this);
+			// connect
 			if (!client.connectClient()) {
 				LOG.log(Level.SEVERE, "Could not connect!");
 			}
+			// open Channel
 			client.openChannel("/sensornetwork/+/sensor/brightness");
 		} catch (final Exception e) {
 			LOG.log(Level.SEVERE, "Could not start!", e);
 			System.exit(1);
 		}
+	}
+
+	// loads the config file
+	public void loadConfig() {
+		// Load Config
+		conf = new Configuration("MQTTDataDealer", "/app/");
+		conf.setValue(serverAddr, "tcp://127.0.0.1:1883");
+		conf.setValue(user, "admin");
+		conf.setValue(pw, "");
+		conf.setValue(certPath, "");
+		conf.init();
+		conf.save();
 	}
 
 	// gets called when a new mqtt message arrives
@@ -66,15 +74,7 @@ public class G8Controller implements MessageProcessor {
 				final JSONObject json = new JSONObject(arg1);
 				// get lux value
 				if (luxList.addVal(json.get("value"))) {
-					// calculate average lux value
-					final double average = luxList.getAvgVal();
-					LOG.log(Level.WARNING, "DER MITTELWERT:" + average);
-					// toggle led
-					if (average > 50) {
-						hwc.ledOff();
-					} else {
-						hwc.ledOn();
-					}
+					checkNewValue();
 				} else {
 					LOG.log(Level.WARNING, () -> "Could not Process Value:" + arg1 + " from:" + arg0);
 				}
@@ -83,6 +83,19 @@ public class G8Controller implements MessageProcessor {
 			}
 		} else {
 			LOG.log(Level.WARNING, arg1);
+		}
+	}
+
+	// is called if a new Value is processed and reacts
+	public void checkNewValue() {
+		// calculate average lux value
+		final double average = luxList.getAvgVal();
+		LOG.log(Level.WARNING, "DER MITTELWERT:" + average);
+		// toggle led
+		if (average > 50) {
+			hwc.ledOff();
+		} else {
+			hwc.ledOn();
 		}
 	}
 
