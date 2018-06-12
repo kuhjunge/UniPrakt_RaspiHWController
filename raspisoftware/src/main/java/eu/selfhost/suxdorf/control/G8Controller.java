@@ -45,10 +45,10 @@ public class G8Controller implements MessageProcessor {
 			client = new MQTTAsyncChat(conf.getValue(user), conf.getValue(pw), conf.getValue(serverAddr),
 					conf.getValue(certPath), "{\"message\": \"" + conf.getValue(user) + " out!\"}", "/sensornetwork/" + conf.getValue(user) + "/status",
 					conf.getValue(user) + Math.random());
+			client.addNewMessageListener(this);
 			if (client.connectClient()) {
 				LOG.log(Level.SEVERE, "Could not connect!");
 			}
-			client.addNewMessageListener(this);
 			client.openChannel("/sensornetwork/+/sensor/brightness");
 		} catch (final Exception e) {
 			LOG.log(Level.SEVERE, "Could not start!", e);
