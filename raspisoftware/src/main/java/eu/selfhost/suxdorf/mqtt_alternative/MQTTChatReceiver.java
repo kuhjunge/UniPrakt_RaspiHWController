@@ -28,7 +28,7 @@ public class MQTTChatReceiver implements MqttCallback {
 
 	@Override
 	public void deliveryComplete(final IMqttDeliveryToken arg0) {
-		setMessage("System", "Send");
+		setMessage("System", "Message delivered");
 	}
 
 	@Override

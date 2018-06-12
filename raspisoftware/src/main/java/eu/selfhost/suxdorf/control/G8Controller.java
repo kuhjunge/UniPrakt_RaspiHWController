@@ -65,19 +65,21 @@ public class G8Controller implements MessageProcessor {
 				// try to parse incoming message
 				final JSONObject json = new JSONObject(arg1);
 				// get lux value
-				luxList.addVal((Double) json.get("value"));
-
-				// calculate average lux value
-				final double average = luxList.getAvgVal();
-				LOG.log(Level.WARNING, "DER MITTELWERT:" + average);
-				// toggle led
-				if (average > 50) {
-					hwc.ledOff();
+				if (luxList.addVal(json.get("value"))) {
+					// calculate average lux value
+					final double average = luxList.getAvgVal();
+					LOG.log(Level.WARNING, "DER MITTELWERT:" + average);
+					// toggle led
+					if (average > 50) {
+						hwc.ledOff();
+					} else {
+						hwc.ledOn();
+					}
 				} else {
-					hwc.ledOn();
+					LOG.log(Level.WARNING, () -> "Could not Process Value:" + arg1 + " from:" + arg0);
 				}
 			} catch (final Exception e) {
-				LOG.log(Level.WARNING, () -> "Could not Parse XML:" + arg1 + " from:" + arg0);
+				LOG.log(Level.WARNING, () -> "Could not Parse JSON:" + arg1 + " from:" + arg0);
 			}
 		} else {
 			LOG.log(Level.WARNING, arg1);

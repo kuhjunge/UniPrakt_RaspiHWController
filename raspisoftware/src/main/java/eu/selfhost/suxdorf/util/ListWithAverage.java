@@ -6,12 +6,20 @@ import java.util.List;
 public class ListWithAverage {
 	private List<Double> luxList = new LinkedList<>();
 
-	public void addVal(Double val) {
-		luxList.add(val);
+	public boolean addVal(Object val) {
+		boolean ret = true;
+		if (val instanceof Double) {
+			luxList.add((Double) val);
+		} else if (val instanceof String) {
+			luxList.add(Double.parseDouble((String) val));
+		} else {
+			ret = false;
+		}
 		// remove first lux value if list is greater 20
 		if (luxList.size() > 20) {
 			luxList.remove(0);
 		}
+		return ret;
 	}
 
 	public double getAvgVal() {
