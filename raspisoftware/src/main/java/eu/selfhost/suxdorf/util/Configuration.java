@@ -19,7 +19,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  ******************************************************************************/
-package eu.selfhost.suxdorf.control;
+package eu.selfhost.suxdorf.util;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -39,7 +39,7 @@ import java.util.logging.Logger;
  * @author Chris Deter
  *
  */
-class Configuration {
+public class Configuration {
   private static final String CONF_LOC = "APPDATA";
   private static final String EMPTYSTRING = "";
   private static final String CONFIGFILEENDING = ".conf";

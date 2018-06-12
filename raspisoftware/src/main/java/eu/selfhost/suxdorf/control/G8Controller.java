@@ -9,6 +9,8 @@ import eu.selfhost.suxdorf.MessageProcessor;
 import eu.selfhost.suxdorf.NetworkMessenger;
 import eu.selfhost.suxdorf.hardware.HardwareControl;
 import eu.selfhost.suxdorf.mqtt_alternative.MQTTAsyncChat;
+import eu.selfhost.suxdorf.util.Configuration;
+import eu.selfhost.suxdorf.util.ListWithAverage;
 
 public class G8Controller implements MessageProcessor {
 
@@ -58,23 +60,27 @@ public class G8Controller implements MessageProcessor {
 
 	// gets called when a new mqtt message arrives
 	public void messageIncoming(final String arg0, final String arg1) {
-		try {
-			// try to parse incoming message
-			final JSONObject json = new JSONObject(arg1);
-			// get lux value
-			luxList.addVal((Double) json.get("value"));
-		} catch (final Exception e) {
-			LOG.log(Level.WARNING, () -> "Could not Parse XML:" + arg1 + " from:" + arg0);
-		}
+		if (!arg0.equals("System")) {
+			try {
+				// try to parse incoming message
+				final JSONObject json = new JSONObject(arg1);
+				// get lux value
+				luxList.addVal((Double) json.get("value"));
 
-		// calculate average lux value
-		final double average = luxList.getAvgVal();
-		LOG.log(Level.WARNING, "DER MITTELWERT:" + average);
-		// toggle led
-		if (average > 50) {
-			hwc.ledOff();
+				// calculate average lux value
+				final double average = luxList.getAvgVal();
+				LOG.log(Level.WARNING, "DER MITTELWERT:" + average);
+				// toggle led
+				if (average > 50) {
+					hwc.ledOff();
+				} else {
+					hwc.ledOn();
+				}
+			} catch (final Exception e) {
+				LOG.log(Level.WARNING, () -> "Could not Parse XML:" + arg1 + " from:" + arg0);
+			}
 		} else {
-			hwc.ledOn();
+			LOG.log(Level.WARNING, arg1);
 		}
 	}
 

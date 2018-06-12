@@ -1,4 +1,4 @@
-package eu.selfhost.suxdorf.control;
+package eu.selfhost.suxdorf.util;
 
 import java.util.LinkedList;
 import java.util.List;
