@@ -16,9 +16,9 @@ public class G8Controller implements MessageProcessor {
 	private final static String user = "user";
 	private final static String pw = "pw";
 	private final static String certPath = "cert";
-	
+
 	public static void main(final String[] args) throws Exception {
-		new G8Controller(); // Starte 
+		new G8Controller(); // Starte
 	}
 
 	private static final Logger LOG = Logger.getLogger(G8Controller.class.getName());
@@ -26,11 +26,11 @@ public class G8Controller implements MessageProcessor {
 	private NetworkMessenger client;
 	private ListWithAverage luxList = new ListWithAverage();
 	private Configuration conf;
-	
+
 	public G8Controller() {
 		try {
 			// Load Config
-			conf = new Configuration("MQTTDataDealer","/app/");
+			conf = new Configuration("MQTTDataDealer", "/app/");
 			conf.setValue(serverAddr, "tcp://127.0.0.1:1883");
 			conf.setValue(user, "admin");
 			conf.setValue(pw, "");
@@ -43,10 +43,10 @@ public class G8Controller implements MessageProcessor {
 			// init mqtt client
 			// sends and gets lux values
 			client = new MQTTAsyncChat(conf.getValue(user), conf.getValue(pw), conf.getValue(serverAddr),
-					conf.getValue(certPath), "{\"message\": \"" + conf.getValue(user) + " out!\"}", "/sensornetwork/" + conf.getValue(user) + "/status",
-					conf.getValue(user) + Math.random());
+					conf.getValue(certPath), "{\"message\": \"" + conf.getValue(user) + " out!\"}",
+					"/sensornetwork/" + conf.getValue(user) + "/status", conf.getValue(user) + Math.random());
 			client.addNewMessageListener(this);
-			if (client.connectClient()) {
+			if (!client.connectClient()) {
 				LOG.log(Level.SEVERE, "Could not connect!");
 			}
 			client.openChannel("/sensornetwork/+/sensor/brightness");
@@ -64,7 +64,7 @@ public class G8Controller implements MessageProcessor {
 			// get lux value
 			luxList.addVal((Double) json.get("value"));
 		} catch (final Exception e) {
-			LOG.log(Level.WARNING, ()->"Could not Parse XML:" + arg1 +  " from:" + arg0);
+			LOG.log(Level.WARNING, () -> "Could not Parse XML:" + arg1 + " from:" + arg0);
 		}
 
 		// calculate average lux value
@@ -82,7 +82,7 @@ public class G8Controller implements MessageProcessor {
 	public void processMessageStringIn(final String topic, final String message) {
 		messageIncoming(topic, message);
 	}
-	
+
 	@Override
 	public void processMessageDoubleOut(final String topic, final double val, final String unit) {
 		final JSONObject dataset = new JSONObject();
@@ -90,7 +90,7 @@ public class G8Controller implements MessageProcessor {
 		dataset.put("value", val);
 		dataset.put("measurement_unit", unit);
 		// send lux value to mqtt broker
-		client.sendMessage("/sensornetwork/group8/sensor/"+topic, dataset.toString());
+		client.sendMessage("/sensornetwork/group8/sensor/" + topic, dataset.toString());
 	}
 
 	// TODO: Prüfen ob wirklich benötigt
