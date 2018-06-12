@@ -26,6 +26,7 @@ public class MQTTAsyncChat implements NetworkMessenger {
 
 	public MQTTAsyncChat(final String username, final String pw, final String mqttServerAddress,
 			final String pathToChert, final String testament, final String testamentTopic, final String clientId) {
+		LOG.log(Level.WARNING, "User:" + username + " pw:" + pw + " server:" + mqttServerAddress + " pathCert:" + pathToChert);
 		this.username = username;
 		opts.setMqttVersion(MqttConnectOptions.MQTT_VERSION_3_1_1);
 		opts.setCleanSession(true);

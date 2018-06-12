@@ -1,7 +1,5 @@
 package eu.selfhost.suxdorf.control;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -26,7 +24,7 @@ public class G8Controller implements MessageProcessor {
 	private static final Logger LOG = Logger.getLogger(G8Controller.class.getName());
 	private HardwareControl hwc;
 	private NetworkMessenger client;
-	private List<Double> luxList;
+	private ListWithAverage luxList = new ListWithAverage();
 	private Configuration conf;
 	
 	public G8Controller() {
@@ -52,22 +50,10 @@ public class G8Controller implements MessageProcessor {
 			}
 			client.addNewMessageListener(this);
 			client.openChannel("/sensornetwork/+/sensor/brightness");
-			// lux value list
-			luxList = new ArrayList<>();
 		} catch (final Exception e) {
 			LOG.log(Level.SEVERE, "Could not start!", e);
 			System.exit(1);
 		}
-	}
-
-	// calculates the average lux value above the last 20 lux values
-	private double averageLux() {
-		double average = 0.0;
-		for (final double v : luxList) {
-			average += v;
-		}
-		average = average / luxList.size();
-		return average;
 	}
 
 	// gets called when a new mqtt message arrives
@@ -76,18 +62,13 @@ public class G8Controller implements MessageProcessor {
 			// try to parse incoming message
 			final JSONObject json = new JSONObject(arg1);
 			// get lux value
-			final double value = (Double) json.get("value");
-			luxList.add(value);
-			// remove first lux value if list is greater 20
-			if (luxList.size() > 20) {
-				luxList.remove(0);
-			}
+			luxList.addVal((Double) json.get("value"));
 		} catch (final Exception e) {
 			LOG.log(Level.WARNING, "Could not Parse XML", e);
 		}
 
 		// calculate average lux value
-		final double average = averageLux();
+		final double average = luxList.getAvgVal();
 		LOG.log(Level.WARNING, "DER MITTELWERT:" + average);
 		// toggle led
 		if (average > 50) {
@@ -97,27 +78,22 @@ public class G8Controller implements MessageProcessor {
 		}
 	}
 
-	// is called when HardwareControl gets a new value from the ldr
-	public void newValueAvailable(final double value, final String unit, final String topic) {
-		// create json object
+	@Override
+	public void processMessageStringIn(final String topic, final String message) {
+		messageIncoming(topic, message);
+	}
+	
+	@Override
+	public void processMessageDoubleOut(final String topic, final double val, final String unit) {
 		final JSONObject dataset = new JSONObject();
 		// put ldr value in lux in it
-		dataset.put("value", value);
+		dataset.put("value", val);
 		dataset.put("measurement_unit", unit);
 		// send lux value to mqtt broker
 		client.sendMessage("/sensornetwork/group8/sensor/"+topic, dataset.toString());
 	}
 
-	@Override
-	public void processMessageDoubleOut(final String topic, final double val, final String unit) {
-		newValueAvailable(val, unit, topic);
-	}
-
-	@Override
-	public void processMessageStringIn(final String topic, final String message) {
-		messageIncoming(topic, message);
-	}
-
+	// TODO: Prüfen ob wirklich benötigt
 	@Override
 	public void processMessageStringOut(final String topic, final String message) {
 		final JSONObject dataset = new JSONObject();
