@@ -10,6 +10,8 @@ public class ListWithAverage {
 		boolean ret = true;
 		if (val instanceof Double) {
 			luxList.add((Double) val);
+		} else if (val instanceof Integer) {
+			luxList.add(((Integer) val) + 0.0);
 		} else if (val instanceof String) {
 			luxList.add(Double.parseDouble((String) val));
 		} else {
