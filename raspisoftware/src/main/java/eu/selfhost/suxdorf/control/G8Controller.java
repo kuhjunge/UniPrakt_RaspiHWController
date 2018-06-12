@@ -6,13 +6,19 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.json.JSONObject;
+
 import eu.selfhost.suxdorf.MessageProcessor;
 import eu.selfhost.suxdorf.NetworkMessenger;
 import eu.selfhost.suxdorf.hardware.HardwareControl;
-import eu.selfhost.suxdorf.mqtt.G8MqttClient;
+import eu.selfhost.suxdorf.mqtt_alternative.MQTTAsyncChat;
 
 public class G8Controller implements MessageProcessor {
 
+	private final static String serverAddr = "ServerAddress";
+	private final static String user = "user";
+	private final static String pw = "pw";
+	private final static String certPath = "cert";
+	
 	public static void main(final String[] args) throws Exception {
 		new G8Controller(); // Starte 
 	}
@@ -21,15 +27,29 @@ public class G8Controller implements MessageProcessor {
 	private HardwareControl hwc;
 	private NetworkMessenger client;
 	private List<Double> luxList;
-
+	private Configuration conf;
+	
 	public G8Controller() {
 		try {
+			// Load Config
+			conf = new Configuration("MQTTDataDealer","/app/");
+			conf.setValue(serverAddr, "tcp://127.0.0.1:1883");
+			conf.setValue(user, "admin");
+			conf.setValue(pw, "");
+			conf.setValue(certPath, "");
+			conf.init();
+			conf.save();
 			// init hardware controller
 			// reads ldr values
 			hwc = new HardwareControl(this);
 			// init mqtt client
 			// sends and gets lux values
-			client = new G8MqttClient(this);
+			client = new MQTTAsyncChat(conf.getValue(user), conf.getValue(pw), conf.getValue(serverAddr),
+					conf.getValue(certPath), "{\"message\": \"" + conf.getValue(user) + " out!\"}", "/sensornetwork/" + conf.getValue(user) + "/status",
+					conf.getValue(user) + Math.random());
+			if (client.connectClient()) {
+				LOG.log(Level.SEVERE, "Could not connect!");
+			}
 			client.addNewMessageListener(this);
 			client.openChannel("/sensornetwork/+/sensor/brightness");
 			// lux value list
