@@ -64,7 +64,7 @@ public class G8Controller implements MessageProcessor {
 			// get lux value
 			luxList.addVal((Double) json.get("value"));
 		} catch (final Exception e) {
-			LOG.log(Level.WARNING, "Could not Parse XML", e);
+			LOG.log(Level.WARNING, ()->"Could not Parse XML:" + arg1 +  " from:" + arg0);
 		}
 
 		// calculate average lux value

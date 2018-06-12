@@ -35,6 +35,7 @@ public class MQTTAsyncChat implements NetworkMessenger {
 		// Last Will setzen
 		opts.setWill(testamentTopic, testament.getBytes(), 2, false);
 		try {
+			LOG.log(Level.WARNING, pathToChert + username + ".key");
 			if (pathToChert.length() > 1 && new File(pathToChert + username + ".key").exists()) {
 				opts.setSocketFactory(SslUtil.getSocketFactory(pathToChert + "ca.crt", pathToChert + username + ".crt",
 						pathToChert + username + ".key", ""));
