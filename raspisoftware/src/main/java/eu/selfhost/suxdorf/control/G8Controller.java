@@ -111,7 +111,7 @@ public class G8Controller implements MessageProcessor {
 		dataset.put("value", val);
 		dataset.put("measurement_unit", unit);
 		// send lux value to mqtt broker
-		client.sendMessage("/sensornetwork/group8/sensor/" + topic, dataset.toString());
+		client.sendMessage("/sensornetwork/8/sensor/" + topic, dataset.toString());
 	}
 
 	// TODO: Prüfen ob wirklich benötigt
@@ -122,6 +122,6 @@ public class G8Controller implements MessageProcessor {
 		dataset.put("value", message);
 		dataset.put("measurement_unit", topic);
 		// send lux value to mqtt broker
-		client.sendMessage("/sensornetwork/group8/sensor", dataset.toString());
+		client.sendMessage("/sensornetwork/8/sensor", dataset.toString());
 	}
 }
