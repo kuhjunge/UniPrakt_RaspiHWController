@@ -183,7 +183,7 @@ public class HardwareControl {
 		 * check we read 40 bits (8bit x 5 ) + verify checksum in the last byte print it
 		 * out if data is good
 		 */
-		System.out.println(dht11_dat);
+		System.out.println(dht11_dat[0] + " " +dht11_dat[1] + " " +dht11_dat[2] + " " +dht11_dat[3] );
 		if (j >= 40 && checkParity()) {
 			float h = (float) ((dht11_dat[0] << 8) + dht11_dat[1]) / 10;
 			if (h > 100) {
