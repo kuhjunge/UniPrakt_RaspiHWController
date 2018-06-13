@@ -47,7 +47,7 @@ public class G8Controller implements MessageProcessor {
 				LOG.log(Level.SEVERE, "Could not connect!");
 			}
 			// open Channel
-			client.openChannel("/sensornetwork/+/sensor/brightness");
+			client.openChannel("/sensornetwork/+/sensor/#");
 		} catch (final Exception e) {
 			LOG.log(Level.SEVERE, "Could not start!", e);
 			System.exit(1);
@@ -73,7 +73,7 @@ public class G8Controller implements MessageProcessor {
 				// try to parse incoming message
 				final JSONObject json = new JSONObject(arg1);
 				// get lux value
-				if (luxList.addVal(json.get("value"))) {
+				if ("Lux".equals((String)json.get("measurement_unit")) && luxList.addVal(json.get("value"))) {
 					checkNewValue();
 				} else {
 					LOG.log(Level.WARNING, () -> "Could not Process Value:" + arg1 + " from:" + arg0);

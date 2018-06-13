@@ -156,6 +156,8 @@ public class MQTTAsyncChat implements NetworkMessenger {
 			} catch (final MqttException e) {
 				LOG.log(Level.SEVERE, "Subscription Error", e);
 			}
+		} else {
+			LOG.log(Level.SEVERE, "Subscription Error - MQTT not connected");
 		}
 	}
 }
