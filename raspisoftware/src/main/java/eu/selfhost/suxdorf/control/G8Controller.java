@@ -101,6 +101,7 @@ public class G8Controller implements MessageProcessor {
 
 	@Override
 	public void processMessageStringIn(final String topic, final String message) {
+		LOG.log(Level.WARNING, "->" + topic + " MSG:" + message);
 		messageIncoming(topic, message);
 	}
 

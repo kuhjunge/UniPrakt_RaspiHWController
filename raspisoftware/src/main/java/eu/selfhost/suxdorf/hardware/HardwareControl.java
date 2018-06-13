@@ -106,7 +106,6 @@ public class HardwareControl {
 	}
 
 	private void sendMessage(final GpioPinAnalogValueChangeEvent event) {
-		System.out.println(event.getPin());
 		if (event.getPin().toString().contains(PIN0)) {
 			final double value = event.getValue();
 			mp.processMessageDoubleOut("Lux", analogToLux(value),"brightness");
