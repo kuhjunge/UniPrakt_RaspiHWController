@@ -27,6 +27,7 @@ public class HardwareControl {
 
 	public static String PIN0 = "MyAnalogInput-CH0";
 	public static String PIN1 = "MyAnalogInput-CH1";
+	public static int dht22pin = 22;
 
 	private static final int MAXTIMINGS = 85;
 	private final int[] dht11_dat = { 0, 0, 0, 0, 0 };
@@ -46,7 +47,7 @@ public class HardwareControl {
 			initLed();
 			initMCP3008();
 			// TODO Dokumentieren was das macht
-			GpioUtil.export(3, GpioUtil.DIRECTION_OUT);
+			GpioUtil.export(dht22pin, GpioUtil.DIRECTION_OUT);
 		} catch (final Exception e) {
 			shutdown();
 			throw e;
@@ -102,8 +103,7 @@ public class HardwareControl {
 	}
 
 	public void polling() {
-		float[] fl = getTemperature(22);
-		System.out.println("read temp"); // TODO: Test
+		float[] fl = getTemperature(dht22pin);
 		if (fl != null) {
 			mp.processMessageDoubleOut("temperature", (double) fl[0], "°C");
 			mp.processMessageDoubleOut("humidity", (double) fl[1], "%");
