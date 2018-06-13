@@ -33,7 +33,6 @@ public class MQTTChatReceiver implements MqttCallback {
 
 	@Override
 	public void messageArrived(final String arg0, final MqttMessage arg1) throws Exception {
-		System.out.println("XXX" + arg1 + "" + arg0);
 		setMessage(arg0, new String(arg1.getPayload(), StandardCharsets.UTF_8));
 	}
 
