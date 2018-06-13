@@ -47,7 +47,8 @@ public class G8Controller implements MessageProcessor {
 				LOG.log(Level.SEVERE, "Could not connect!");
 			}
 			// open Channel
-			client.openChannel("/sensornetwork/+/sensor/#");
+			client.openChannel("/sensornetwork/+/sensor/brightness");
+			client.openChannel("/sensornetwork/+/sensor/hall");
 		} catch (final Exception e) {
 			LOG.log(Level.SEVERE, "Could not start!", e);
 			System.exit(1);
