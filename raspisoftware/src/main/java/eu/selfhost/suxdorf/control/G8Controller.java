@@ -51,13 +51,15 @@ public class G8Controller implements MessageProcessor {
 			client.openChannel("/sensornetwork/+/sensor/hall");
 			// Polling
 			Runnable task = () -> {
-			    String threadName = Thread.currentThread().getName();
-				LOG.log(Level.WARNING, threadName + " Polling");
-				hwc.polling();
-				try {
-					Thread.sleep(5000);
-				} catch (InterruptedException e) {
-					LOG.log(Level.SEVERE, "Error Thread", e);
+				while (true) {
+					String threadName = Thread.currentThread().getName();
+					LOG.log(Level.WARNING, threadName + " Polling");
+					hwc.polling();
+					try {
+						Thread.sleep(5000);
+					} catch (InterruptedException e) {
+						LOG.log(Level.SEVERE, "Error Thread", e);
+					}
 				}
 			};
 			Thread thread = new Thread(task);

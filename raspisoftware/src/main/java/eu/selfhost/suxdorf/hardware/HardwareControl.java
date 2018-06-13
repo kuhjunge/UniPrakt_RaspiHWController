@@ -103,6 +103,7 @@ public class HardwareControl {
 
 	public void polling() {
 		float[] fl = getTemperature(22);
+		System.out.println("read temp"); // TODO: Test
 		if (fl != null) {
 			mp.processMessageDoubleOut("temperature", (double) fl[0], "°C");
 			mp.processMessageDoubleOut("humidity", (double) fl[1], "%");
