@@ -12,6 +12,7 @@ import com.pi4j.io.gpio.GpioFactory;
 import com.pi4j.io.gpio.GpioPinAnalogInput;
 import com.pi4j.io.gpio.GpioPinDigitalInput;
 import com.pi4j.io.gpio.GpioPinDigitalOutput;
+import com.pi4j.io.gpio.Pin;
 import com.pi4j.io.gpio.PinState;
 import com.pi4j.io.gpio.RaspiPin;
 import com.pi4j.io.gpio.event.GpioPinAnalogValueChangeEvent;
@@ -27,8 +28,8 @@ public class HardwareControl {
 
 	public static String PIN0 = "MyAnalogInput-CH0";
 	public static String PIN1 = "MyAnalogInput-CH1";
-	public static int dht22pin = 22;
-
+	public static int dht22pin = 7;
+	public Pin ledpin = RaspiPin.GPIO_22;
 	private static final int MAXTIMINGS = 85;
 	private final int[] dht11_dat = { 0, 0, 0, 0, 0 };
 
@@ -67,7 +68,7 @@ public class HardwareControl {
 	}
 
 	public void initLed() {
-		led_pin = gpio.provisionDigitalOutputPin(RaspiPin.GPIO_07, "MyLED", PinState.HIGH);
+		led_pin = gpio.provisionDigitalOutputPin(ledpin, "MyLED", PinState.HIGH);
 		// set shutdown state for this pin
 		led_pin.setShutdownOptions(true, PinState.LOW);
 		// turn off gpio pin #01
