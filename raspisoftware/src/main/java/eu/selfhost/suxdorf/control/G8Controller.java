@@ -56,7 +56,7 @@ public class G8Controller implements MessageProcessor {
 					LOG.log(Level.WARNING, threadName + " Polling");
 					hwc.polling();
 					try {
-						Thread.sleep(5000);
+						Thread.sleep(10000);
 					} catch (InterruptedException e) {
 						LOG.log(Level.SEVERE, "Error Thread", e);
 					}

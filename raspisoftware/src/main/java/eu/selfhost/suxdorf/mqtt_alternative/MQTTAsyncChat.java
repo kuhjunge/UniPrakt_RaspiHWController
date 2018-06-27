@@ -43,7 +43,7 @@ public class MQTTAsyncChat implements NetworkMessenger {
 			client = new MqttAsyncClient(mqttServerAddress, clientId, persistence);
 			client.setCallback(cr);
 		} catch (final Exception e) {
-			LOG.log(Level.SEVERE, "Connection Error", e);
+			LOG.log(Level.SEVERE, "Connection Error(" +username +":"+ pw +":"+ mqttServerAddress +":"+ pathToChert + ")", e);
 		}
 	}
 
