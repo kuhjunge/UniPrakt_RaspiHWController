@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>G8 Display</title>
+    <!-- Eclipse Paho MQTT JS Library
+        https://www.eclipse.org/paho/clients/js/ -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.min.js" type="text/javascript"></script>
+    <!-- https://cdnjs.com/libraries/Chart.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.min.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        // Create a client instance
+        //client = new Paho.MQTT.Client("test.mosquitto.org", Number(8080), "G8Display");
+        client = new Paho.MQTT.Client("141.83.175.234", Number(9003), "G8Display");
+
+        // set callback handlers
+        client.onConnectionLost = onConnectionLost;
+        client.onMessageArrived = onMessageArrived;
+
+        // connect the client
+        //client.connect({onSuccess:onConnect});
+        client.connect({
+            onSuccess:onConnect,
+            onFailure: onFailure,
+            userName:'group_8',
+            password:'nengausiem2AQueiph8U',
+            useSSL: false
+        });
+
+        function onFailure(args) {
+            console.log("error");
+            console.log(args);
+        }
+
+
+        // called when the client connects
+        function onConnect() {
+            // Once a connection has been made, make a subscription and send a message.
+            console.log("onConnect");
+            client.subscribe("/actuatornetwork/8/actuator/display");
+            message = new Paho.MQTT.Message("Hello");
+            message.destinationName = "/actuatornetwork/8/actuator/display";
+            client.send(message);
+        }
+
+        // called when the client loses its connection
+        function onConnectionLost(responseObject) {
+            if (responseObject.errorCode !== 0) {
+                console.log("onConnectionLost:"+responseObject.errorMessage);
+            }
+        }
+
+        // called when a message arrives
+        function onMessageArrived(message) {
+            console.log("onMessageArrived:"+message.payloadString);
+
+            // if message "Test" arrives, print it in TextMessage p
+            if ("Test".localeCompare(message.payloadString) == 0) {
+                document.getElementById('TextMessage').innerHTML = message.payloadString;
+            }
+            // interprete json -> update data set of sensor -> get timestamp -> update time set -> update graph
+        }
+
+        // send "Test" message
+        function sendTest() {
+            message = new Paho.MQTT.Message("Test");
+            message.destinationName = "/actuatornetwork/8/actuator/display";
+            client.send(message);
+        }
+
+        //get TimeStamp hh:mm:ss
+        function getTimeStamp() {
+            Date.prototype.timeNow = function () {
+                return ((this.getHours() < 10)?"0":"") + this.getHours() +":"+ ((this.getMinutes() < 10)?"0":"") + this.getMinutes() +":"+ ((this.getSeconds() < 10)?"0":"") + this.getSeconds();
+            }
+            var newDate = new Date();
+            return newDate.timeNow();
+        }
+    </script>
+</head>
+<body>
+    <p id="TextMessage"></p>
+    <button type="button" onclick="console.log(getTimeStamp())"> Click me.</button>
+    <div style="height: 300px; width: 400px;">
+        <canvas id="myChart" width="400px" height="400px"></canvas>
+    </div>
+    <script>
+        var dataFirst = {
+            label: "Car A - Speed (mph)",
+            data: [0, 59, 75, 20, 20, 55, 40],
+            lineTension: 0.3,
+            fill: false,
+            borderColor: 'red',
+            backgroundColor: 'transparent',
+            pointBorderColor: 'red',
+            pointBackgroundColor: 'lightgreen',
+            pointRadius: 5,
+            pointHoverRadius: 15,
+            pointHitRadius: 30,
+            pointBorderWidth: 2,
+            pointStyle: 'rect'
+        };
+
+        var dataSecond = {
+            label: "Car B - Speed (mph)",
+            data: [20, 15, 60, 60, 65, 30, 70],
+            lineTension: 0.3,
+            fill: false,
+            borderColor: 'purple',
+            backgroundColor: 'transparent',
+            pointBorderColor: 'purple',
+            pointBackgroundColor: 'lightgreen',
+            pointRadius: 5,
+            pointHoverRadius: 15,
+            pointHitRadius: 30,
+            pointBorderWidth: 2
+        };
+
+        var speedData = {
+            labels: ["0s", "10s", "20s", "30s", "40s", "50s", "60s"],
+            datasets: [dataFirst, dataSecond]
+        };
+
+        var chartOptions = {
+            legend: {
+                display: true,
+                position: 'top',
+                labels: {
+                    boxWidth: 80,
+                    fontColor: 'black'
+                }
+            }
+        };
+
+        var ctx = document.getElementById("myChart").getContext('2d');
+        var myChart = new Chart(ctx, {
+            type: 'line',
+            data: speedData,
+            options: chartOptions
+        });
+    </script>
+</body>
+</html>
