@@ -73,7 +73,7 @@ public class G8Controller implements MessageProcessor {
 	// loads the config file
 	public void loadConfig() {
 		// Load Config
-		conf = new Configuration("MQTTDataDealer", "/app/");
+		conf = new Configuration("MQTTDataDealer", "/app2/");
 		conf.setValue(serverAddr, "tcp://127.0.0.1:1883");
 		conf.setValue(user, "admin");
 		conf.setValue(pw, "");
