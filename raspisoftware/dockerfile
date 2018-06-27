@@ -26,6 +26,11 @@ ENTRYPOINT ["/bin/sh", "-c"]
 
 #CMD ["gpio readall"]
 
-#docker build -t unilubecktest .
+#docker build -t uniluebeck_raspi_aufg3 .
 #docker ps -a
-#docker run -it --privileged unilubecktest bash 
+#docker run \
+#-it --rm --privileged \
+#-v /home/pi/software/UniPrakt_RaspiHWController/raspisoftware/target/raspisoftware-0.0.1-SNAPSHOT.jar:/app/latest.jar \
+#-v /home/pi/cert/:/app/ \
+# uniluebeck_raspi_aufg3 \
+#"java -jar /app/latest.jar"

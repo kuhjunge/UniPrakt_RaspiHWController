@@ -43,6 +43,9 @@ public class HardwareControl {
 	private GpioPinDigitalInput photo_pin;
 
 	public HardwareControl(final MessageProcessor mp) throws Exception {
+		if (Gpio.wiringPiSetup() == -1) {
+			LOG.log(Level.SEVERE, "Die dumme Kuh initialisiert nicht");
+		}
 		this.mp = mp;
 		try {
 			initLed();
