@@ -9,23 +9,36 @@
     <!-- https://cdnjs.com/libraries/Chart.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.min.js" type="text/javascript"></script>
     <script type="text/javascript">
+        // chart data vectors
+        var lux = [];
+        var temp = [];
+        var humidity = [];
+        var time = [];
+
+
+        var luxLast = 0;
+        var tempLast = 0;
+        var humidityLast = 0;
+        var counter = 0;
+
+
         // Create a client instance
-        //client = new Paho.MQTT.Client("test.mosquitto.org", Number(8080), "G8Display");
-        client = new Paho.MQTT.Client("141.83.175.234", Number(9003), "G8Display");
+        client = new Paho.MQTT.Client("test.mosquitto.org", Number(8080), "G8Display");
+        //client = new Paho.MQTT.Client("141.83.175.234", Number(9003), "G8Display");
 
         // set callback handlers
         client.onConnectionLost = onConnectionLost;
         client.onMessageArrived = onMessageArrived;
 
         // connect the client
-        //client.connect({onSuccess:onConnect});
-        client.connect({
-            onSuccess:onConnect,
-            onFailure: onFailure,
-            userName:'group_8',
-            password:'nengausiem2AQueiph8U',
-            useSSL: false
-        });
+        client.connect({onSuccess:onConnect});
+        //client.connect({
+        //    onSuccess:onConnect,
+        //    onFailure: onFailure,
+        //    userName:'group_8',
+        //    password:'nengausiem2AQueiph8U',
+        //    useSSL: false
+        //});
 
         function onFailure(args) {
             console.log("error");
@@ -38,9 +51,12 @@
             // Once a connection has been made, make a subscription and send a message.
             console.log("onConnect");
             client.subscribe("/actuatornetwork/8/actuator/display");
-            message = new Paho.MQTT.Message("Hello");
-            message.destinationName = "/actuatornetwork/8/actuator/display";
-            client.send(message);
+            client.subscribe("/sensornetwork/8/sensor/brightness");
+            client.subscribe("/sensornetwork/8/sensor/temperature");
+            client.subscribe("/sensornetwork/8/sensor/humidity");
+            //message = new Paho.MQTT.Message("Hello");
+            //message.destinationName = "/actuatornetwork/8/actuator/display";
+            //client.send(message);
         }
 
         // called when the client loses its connection
@@ -54,17 +70,38 @@
         function onMessageArrived(message) {
             console.log("onMessageArrived:"+message.payloadString);
 
-            // if message "Test" arrives, print it in TextMessage p
-            if ("Test".localeCompare(message.payloadString) == 0) {
-                document.getElementById('TextMessage').innerHTML = message.payloadString;
-            }
-            // interprete json -> update data set of sensor -> get timestamp -> update time set -> update graph
+            parseJSON(message.payloadString);
         }
 
-        // send "Test" message
+        // send test messages
         function sendTest() {
-            message = new Paho.MQTT.Message("Test");
+            setTimeout(sendTestText, 2000);
+            setTimeout(sendTestLux, 2000);
+            setTimeout(sendTestCelsius, 2000);
+            setTimeout(sendTestPercent, 2000);
+        }
+
+        function sendTestText() {
+            message = new Paho.MQTT.Message('{ "measurement_unit":"Text", "value":"Dies ist ein Text."}');
             message.destinationName = "/actuatornetwork/8/actuator/display";
+            client.send(message);
+        }
+
+        function sendTestLux() {
+            message = new Paho.MQTT.Message('{ "measurement_unit":"Lux", "value":70}');
+            message.destinationName = "/sensornetwork/8/sensor/brightness";
+            client.send(message);
+        }
+
+        function sendTestCelsius() {
+            message = new Paho.MQTT.Message('{ "measurement_unit":"Celsius", "value":30}');
+            message.destinationName = "/sensornetwork/8/sensor/temperature";
+            client.send(message);
+        }
+
+        function sendTestPercent() {
+            message = new Paho.MQTT.Message('{ "measurement_unit":"Percent", "value":80}');
+            message.destinationName = "/sensornetwork/8/sensor/humidity";
             client.send(message);
         }
 
@@ -76,68 +113,216 @@
             var newDate = new Date();
             return newDate.timeNow();
         }
+
+        function overlayOn() {
+            document.getElementById("overlay").style.display = "block";
+            setTimeout(overlayOff, 3000);
+        }
+
+        function overlayOnWithTimeout(timeout) {
+            document.getElementById("overlay").style.display = "block";
+            setTimeout(overlayOff, timeout);
+        }
+
+        function overlayOff() {
+            document.getElementById("overlay").style.display = "none";
+        }
+
+        function testJSON() {
+            parseJSON('{ "measurement_unit":"Lux", "value":60}');
+        }
+
+        function updateGraph() {
+            lux.push(luxLast);
+            temp.push(tempLast);
+            humidity.push(humidityLast);
+            time.push(getTimeStamp());
+            createChart();
+            counter = counter + 1;
+            if (counter == 8) {
+                lux = [];
+                temp = [];
+                humidity = [];
+                time = [];
+                counter = 0;
+            }
+            setTimeout(updateGraph, 30000);
+        }
+
+        function parseJSON(received) {
+            var obj = JSON.parse(received);
+            if ((obj.measurement_unit).localeCompare("Lux") == 0) {
+                console.log("Brightness (Lux) value received: " + obj.value);
+                /*lux.push(obj.value);
+                time.push(getTimeStamp());
+                temp.push(null);
+                humidity.push(null);
+                createChart();*/
+                luxLast = obj.value;
+            } else if ((obj.measurement_unit).localeCompare("Text") == 0) {
+                console.log("Text value received: " + obj.value);
+                document.getElementById('text').innerHTML = obj.value;
+                overlayOn();
+            } else if ((obj.measurement_unit).localeCompare("Celsius") == 0) {
+                console.log("Temperature (Celsius) value received: " + obj.value);
+                /*temp.push(obj.value);
+                time.push(getTimeStamp());
+                lux.push(null);
+                humidity.push(null);
+                createChart();*/
+                tempLast = obj.value;
+            } else if ((obj.measurement_unit).localeCompare("Percent") == 0) {
+                console.log("Humidity (Percent) value received: " + obj.value);
+                /*humidity.push(obj.value);
+                time.push(getTimeStamp());
+                lux.push(null);
+                temp.push(null);
+                createChart();*/
+                humidityLast = obj.value;
+            }
+        }
     </script>
+    <style>
+        #overlay {
+            position: fixed; /* Sit on top of the page content */
+            display: none; /* Hidden by default */
+            width: 100%; /* Full width (cover the whole page) */
+            height: 100%; /* Full height (cover the whole page) */
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0,0,0,0.5); /* Black background with opacity */
+            z-index: 2; /* Specify a stack order in case you're using a different order for other elements */
+            cursor: pointer; /* Add a pointer on hover */
+        }
+        #text{
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            font-size: 50px;
+            color: white;
+            transform: translate(-50%,-50%);
+            -ms-transform: translate(-50%,-50%);
+        }
+    </style>
 </head>
 <body>
+    <!--
     <p id="TextMessage"></p>
-    <button type="button" onclick="console.log(getTimeStamp())"> Click me.</button>
-    <div style="height: 300px; width: 400px;">
-        <canvas id="myChart" width="400px" height="400px"></canvas>
+    <button type="button" onclick="document.getElementById('TextMessage').innerHTML = getTimeStamp()"> Click me.</button>
+    <button type="button" onclick="sendTest()"> Click me.</button>
+    -->
+
+    <div style="height: 300px; width: 460px; background-color: black">
+        <div id="overlay">
+            <div id="text">Overlay Text</div>
+        </div>
+        <canvas id="myChart" width="460px" height="300px"></canvas>
     </div>
     <script>
-        var dataFirst = {
-            label: "Car A - Speed (mph)",
-            data: [0, 59, 75, 20, 20, 55, 40],
-            lineTension: 0.3,
-            fill: false,
-            borderColor: 'red',
-            backgroundColor: 'transparent',
-            pointBorderColor: 'red',
-            pointBackgroundColor: 'lightgreen',
-            pointRadius: 5,
-            pointHoverRadius: 15,
-            pointHitRadius: 30,
-            pointBorderWidth: 2,
-            pointStyle: 'rect'
-        };
+        function createChart() {
+            var luxData = {
+                label: "Light level (LUX)",
+                //data: [0, 59, 75, 20, 20, 55, 40],
+                data: lux,
+                lineTension: 0.3,
+                fill: false,
+                borderColor: 'yellow',
+                backgroundColor: 'transparent',
+                pointBorderColor: 'yellow',
+                pointBackgroundColor: 'lightyellow',
+                pointRadius: 5,
+                pointHoverRadius: 15,
+                pointHitRadius: 30,
+                pointBorderWidth: 2,
+                pointStyle: 'rect'
+            };
 
-        var dataSecond = {
-            label: "Car B - Speed (mph)",
-            data: [20, 15, 60, 60, 65, 30, 70],
-            lineTension: 0.3,
-            fill: false,
-            borderColor: 'purple',
-            backgroundColor: 'transparent',
-            pointBorderColor: 'purple',
-            pointBackgroundColor: 'lightgreen',
-            pointRadius: 5,
-            pointHoverRadius: 15,
-            pointHitRadius: 30,
-            pointBorderWidth: 2
-        };
+            var tempData = {
+                label: "Temperature (Celsius)",
+                //data: [20, 15, 60, 60, 65, 30, 70],
+                data: temp,
+                lineTension: 0.3,
+                fill: false,
+                borderColor: 'red',
+                backgroundColor: 'transparent',
+                pointBorderColor: 'red',
+                pointBackgroundColor: 'lightred',
+                pointRadius: 5,
+                pointHoverRadius: 15,
+                pointHitRadius: 30,
+                pointBorderWidth: 2
+            };
 
-        var speedData = {
-            labels: ["0s", "10s", "20s", "30s", "40s", "50s", "60s"],
-            datasets: [dataFirst, dataSecond]
-        };
+            var humidityData = {
+                label: "Humidity (Percent)",
+                //data: [20, 15, 60, 60, 65, 30, 70],
+                data: humidity,
+                lineTension: 0.3,
+                fill: false,
+                borderColor: 'blue',
+                backgroundColor: 'transparent',
+                pointBorderColor: 'blue',
+                pointBackgroundColor: 'lightblue',
+                pointRadius: 5,
+                pointHoverRadius: 15,
+                pointHitRadius: 30,
+                pointBorderWidth: 2
+            };
 
-        var chartOptions = {
-            legend: {
-                display: true,
-                position: 'top',
-                labels: {
-                    boxWidth: 80,
-                    fontColor: 'black'
+            var chartData = {
+                //labels: ["0s", "10s", "20s", "30s", "40s", "50s", "60s"],
+                labels: time,
+                datasets: [luxData, tempData, humidityData]
+            };
+
+            var chartOptions = {
+                elements: {
+                    line: {
+                        skipNull: false,
+                        drawNull: true
+                    }
+                },
+                legend: {
+                    display: true,
+                    position: 'top',
+                    labels: {
+                        boxWidth: 80,
+                        fontColor: 'white'
+                    }
+                },
+                scales: {
+                    xAxes: [{
+                        display: true,
+                        gridLines: {
+                            color: "#FFFFFF"
+                        },
+                        ticks: {
+                            fontColor: "white"
+                        }
+                    }],
+                    yAxes: [{
+                        display: true,
+                        gridLines: {
+                            color: "#FFFFFF"
+                        },
+                        ticks: {
+                            fontColor: "white"
+                        }
+                    }]
                 }
-            }
-        };
+            };
 
-        var ctx = document.getElementById("myChart").getContext('2d');
-        var myChart = new Chart(ctx, {
-            type: 'line',
-            data: speedData,
-            options: chartOptions
-        });
+            var ctx = document.getElementById("myChart").getContext('2d');
+            var myChart = new Chart(ctx, {
+                type: 'line',
+                data: chartData,
+                options: chartOptions
+            });
+        }
+        createChart();
+        updateGraph();
     </script>
 </body>
 </html>
