@@ -187,10 +187,10 @@
         #overlay {
             position: fixed; /* Sit on top of the page content */
             display: none; /* Hidden by default */
-            width: 100%; /* Full width (cover the whole page) */
-            height: 100%; /* Full height (cover the whole page) */
-            top: 0;
-            left: 0;
+            width: 460px; /* Full width (cover the whole page) */
+            height: 300px; /* Full height (cover the whole page) */
+            top: 9px;
+            left: 9px;
             right: 0;
             bottom: 0;
             background-color: rgba(0,0,0,0.5); /* Black background with opacity */
@@ -215,11 +215,11 @@
     <button type="button" onclick="sendTest()"> Click me.</button>
     -->
 
-    <div style="height: 320px; width: 480px; background-color: black">
+    <div style="height: 300px; width: 460px; background-color: black">
         <div id="overlay">
             <div id="text">Overlay Text</div>
         </div>
-        <canvas id="myChart" width="480px" height="320px"></canvas>
+        <canvas id="myChart" width="460px" height="300px"></canvas>
     </div>
     <script>
         function createChart() {
