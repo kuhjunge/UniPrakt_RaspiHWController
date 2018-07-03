@@ -20,6 +20,8 @@ public class G8Controller implements MessageProcessor {
 	private final static String certPath = "cert";
 
 	private static final Logger LOG = Logger.getLogger(G8Controller.class.getName());
+	private static final String CONFIGFILE = "/app/"; // "/app/"
+	private static final boolean DEBUG = false;
 
 	public static void main(final String[] args) throws Exception {
 		new G8Controller(); // Starte
@@ -33,7 +35,6 @@ public class G8Controller implements MessageProcessor {
 	public G8Controller() {
 		try {
 			loadConfig();
-			// init hardware controller
 			// reads ldr values
 			hwc = new HardwareControl(this);
 			// init mqtt client
@@ -56,28 +57,31 @@ public class G8Controller implements MessageProcessor {
 			client.openChannel("/sensornetwork/+/sensor/hall");
 			client.openChannel("/sensornetwork/3/sensor/indoor/temperature");
 			client.openChannel("/sensornetwork/3/sensor/indoor/humidity");
-			// Polling
-			final Runnable task = () -> {
-				final Random random = new Random();
-				while (true) {
-					final String threadName = Thread.currentThread().getName();
-					LOG.log(Level.WARNING, threadName + " Polling");
-					// hwc.polling();
-					processMessageDoubleOut("/sensornetwork/3/sensor/indoor/temperature", random.nextInt(30) + 5,
-							"Celsius");
-					processMessageDoubleOut("/sensornetwork/3/sensor/indoor/humidity", random.nextInt(30) + 40,
-							"Percent");
-					processMessageDoubleOut("/actuatornetwork/8/actuator/display", "new Dataset", "Text");
-					try {
-						Thread.sleep(10000);
+			// DEBUG Feature um Werte zu simulieren
+			if (DEBUG) {
+				final Runnable task = () -> {
+					final Random random = new Random();
+					while (true) {
+						final String threadName = Thread.currentThread().getName();
+						LOG.log(Level.WARNING, threadName + " Polling");
+						// hwc.polling();
+						processMessageDoubleOut("/sensornetwork/3/sensor/indoor/temperature", random.nextInt(30) + 5,
+								"Celsius");
+						processMessageDoubleOut("/sensornetwork/3/sensor/indoor/humidity", random.nextInt(30) + 40,
+								"Percent");
+						processMessageDoubleOut("/actuatornetwork/8/actuator/display", "new Dataset", "Text");
+						try {
+							Thread.sleep(10000);
 
-					} catch (final InterruptedException e) {
-						LOG.log(Level.SEVERE, "Error Thread", e);
+						} catch (final InterruptedException e) {
+							LOG.log(Level.SEVERE, "Error Thread", e);
+						}
 					}
-				}
-			};
-			final Thread thread = new Thread(task);
-			thread.start();
+				};
+				final Thread thread = new Thread(task);
+				thread.start();
+			}
+			// Ende Debug Teil
 		} catch (final Exception e) {
 			LOG.log(Level.SEVERE, "Could not start!", e);
 			System.exit(1);
@@ -100,7 +104,7 @@ public class G8Controller implements MessageProcessor {
 	// loads the config file
 	public void loadConfig() {
 		// Load Config
-		conf = new Configuration("MQTTDataDealer", "/app/");
+		conf = new Configuration("MQTTDataDealer", CONFIGFILE);
 		conf.setValue(serverAddr, "tcp://127.0.0.1:1883");
 		conf.setValue(user, "admin");
 		conf.setValue(pw, "");
@@ -116,6 +120,7 @@ public class G8Controller implements MessageProcessor {
 				// try to parse incoming message
 				final JSONObject json = new JSONObject(arg1);
 				valProc.processValue(arg0, json);
+				checkNewValue();
 			} catch (final Exception e) {
 				LOG.log(Level.WARNING, () -> "Could not Parse JSON:" + arg1 + " from:" + arg0);
 			}
