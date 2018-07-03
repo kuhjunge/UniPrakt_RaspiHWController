@@ -1,5 +1,6 @@
 package eu.selfhost.suxdorf.control;
 
+import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -57,10 +58,16 @@ public class G8Controller implements MessageProcessor {
 			client.openChannel("/sensornetwork/3/sensor/indoor/humidity");
 			// Polling
 			final Runnable task = () -> {
+				final Random random = new Random();
 				while (true) {
 					final String threadName = Thread.currentThread().getName();
 					LOG.log(Level.WARNING, threadName + " Polling");
 					// hwc.polling();
+					processMessageDoubleOut("/sensornetwork/3/sensor/indoor/temperature", random.nextInt(30) + 5,
+							"Celsius");
+					processMessageDoubleOut("/sensornetwork/3/sensor/indoor/humidity", random.nextInt(30) + 40,
+							"Percent");
+					processMessageDoubleOut("/actuatornetwork/8/actuator/display", "new Dataset", "Text");
 					try {
 						Thread.sleep(10000);
 
