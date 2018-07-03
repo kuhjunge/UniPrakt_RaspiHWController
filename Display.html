@@ -151,35 +151,39 @@
         }
 
         function parseJSON(received) {
-            var obj = JSON.parse(received);
-            if ((obj.measurement_unit).localeCompare("Lux") == 0) {
-                //console.log("Brightness (Lux) value received: " + obj.value);
-                /*lux.push(obj.value);
+            try {
+                var obj = JSON.parse(received);
+                if ((obj.measurement_unit).localeCompare("Lux") == 0) {
+                    //console.log("Brightness (Lux) value received: " + obj.value);
+                    /*lux.push(obj.value);
                 time.push(getTimeStamp());
                 temp.push(null);
                 humidity.push(null);
                 createChart();*/
-                luxLast = obj.value;
-            } else if ((obj.measurement_unit).localeCompare("Text") == 0) {
-                //console.log("Text value received: " + obj.value);
-                document.getElementById('text').innerHTML = obj.value;
-                overlayOn();
-            } else if ((obj.measurement_unit).localeCompare("Celsius") == 0) {
-                //console.log("Temperature (Celsius) value received: " + obj.value);
-                /*temp.push(obj.value);
+                    luxLast = obj.value;
+                } else if ((obj.measurement_unit).localeCompare("Text") == 0) {
+                    //console.log("Text value received: " + obj.value);
+                    document.getElementById('text').innerHTML = obj.value;
+                    overlayOn();
+                } else if ((obj.measurement_unit).localeCompare("Celsius") == 0) {
+                    //console.log("Temperature (Celsius) value received: " + obj.value);
+                    /*temp.push(obj.value);
                 time.push(getTimeStamp());
                 lux.push(null);
                 humidity.push(null);
                 createChart();*/
-                tempLast = obj.value;
-            } else if ((obj.measurement_unit).localeCompare("Percent") == 0) {
-                //console.log("Humidity (Percent) value received: " + obj.value);
-                /*humidity.push(obj.value);
+                    tempLast = obj.value;
+                } else if ((obj.measurement_unit).localeCompare("Percent") == 0) {
+                    //console.log("Humidity (Percent) value received: " + obj.value);
+                    /*humidity.push(obj.value);
                 time.push(getTimeStamp());
                 lux.push(null);
                 temp.push(null);
                 createChart();*/
-                humidityLast = obj.value;
+                    humidityLast = obj.value;
+                }
+            } catch(err) {
+                
             }
         }
     </script>
@@ -199,12 +203,10 @@
         }
         #text{
             position: absolute;
-            top: 50%;
-            left: 50%;
-            font-size: 50px;
+            top: 20px;
+            left: 20px;
+            font-size: 30px;
             color: white;
-            transform: translate(-50%,-50%);
-            -ms-transform: translate(-50%,-50%);
         }
     </style>
 </head>
