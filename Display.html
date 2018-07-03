@@ -41,19 +41,20 @@
         });
 
         function onFailure(args) {
-            console.log("error");
-            console.log(args);
+            //console.log("error");
+            //console.log(args);
         }
 
 
         // called when the client connects
         function onConnect() {
             // Once a connection has been made, make a subscription and send a message.
-            console.log("onConnect");
+            //console.log("onConnect");
+            //client.subscribe("/sensornetwork/+/sensor/brightness");
+            //client.subscribe("/sensornetwork/+/sensor/temperature");
+            //client.subscribe("/sensornetwork/+/sensor/humidity");
             client.subscribe("/actuatornetwork/8/actuator/display");
-            client.subscribe("/sensornetwork/+/sensor/brightness");
-            client.subscribe("/sensornetwork/+/sensor/temperature");
-            client.subscribe("/sensornetwork/+/sensor/humidity");
+
             //message = new Paho.MQTT.Message("Hello");
             //message.destinationName = "/actuatornetwork/8/actuator/display";
             //client.send(message);
@@ -62,13 +63,13 @@
         // called when the client loses its connection
         function onConnectionLost(responseObject) {
             if (responseObject.errorCode !== 0) {
-                console.log("onConnectionLost:"+responseObject.errorMessage);
+                //console.log("onConnectionLost:"+responseObject.errorMessage);
             }
         }
 
         // called when a message arrives
         function onMessageArrived(message) {
-            console.log("onMessageArrived:"+message.payloadString);
+            //console.log("onMessageArrived:"+message.payloadString);
 
             parseJSON(message.payloadString);
         }
@@ -152,7 +153,7 @@
         function parseJSON(received) {
             var obj = JSON.parse(received);
             if ((obj.measurement_unit).localeCompare("Lux") == 0) {
-                console.log("Brightness (Lux) value received: " + obj.value);
+                //console.log("Brightness (Lux) value received: " + obj.value);
                 /*lux.push(obj.value);
                 time.push(getTimeStamp());
                 temp.push(null);
@@ -160,11 +161,11 @@
                 createChart();*/
                 luxLast = obj.value;
             } else if ((obj.measurement_unit).localeCompare("Text") == 0) {
-                console.log("Text value received: " + obj.value);
+                //console.log("Text value received: " + obj.value);
                 document.getElementById('text').innerHTML = obj.value;
                 overlayOn();
             } else if ((obj.measurement_unit).localeCompare("Celsius") == 0) {
-                console.log("Temperature (Celsius) value received: " + obj.value);
+                //console.log("Temperature (Celsius) value received: " + obj.value);
                 /*temp.push(obj.value);
                 time.push(getTimeStamp());
                 lux.push(null);
@@ -172,7 +173,7 @@
                 createChart();*/
                 tempLast = obj.value;
             } else if ((obj.measurement_unit).localeCompare("Percent") == 0) {
-                console.log("Humidity (Percent) value received: " + obj.value);
+                //console.log("Humidity (Percent) value received: " + obj.value);
                 /*humidity.push(obj.value);
                 time.push(getTimeStamp());
                 lux.push(null);
@@ -214,11 +215,11 @@
     <button type="button" onclick="sendTest()"> Click me.</button>
     -->
 
-    <div style="height: 300px; width: 460px; background-color: black">
+    <div style="height: 320px; width: 480px; background-color: black">
         <div id="overlay">
             <div id="text">Overlay Text</div>
         </div>
-        <canvas id="myChart" width="460px" height="300px"></canvas>
+        <canvas id="myChart" width="480px" height="320px"></canvas>
     </div>
     <script>
         function createChart() {
