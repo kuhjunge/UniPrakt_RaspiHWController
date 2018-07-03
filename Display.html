@@ -23,22 +23,22 @@
 
 
         // Create a client instance
-        client = new Paho.MQTT.Client("test.mosquitto.org", Number(8080), "G8Display");
-        //client = new Paho.MQTT.Client("141.83.175.234", Number(9003), "G8Display");
+        //client = new Paho.MQTT.Client("test.mosquitto.org", Number(8080), "G8Display");
+        client = new Paho.MQTT.Client("141.83.175.234", Number(9003), "G8Display");
 
         // set callback handlers
         client.onConnectionLost = onConnectionLost;
         client.onMessageArrived = onMessageArrived;
 
         // connect the client
-        client.connect({onSuccess:onConnect});
-        //client.connect({
-        //    onSuccess:onConnect,
-        //    onFailure: onFailure,
-        //    userName:'group_8',
-        //    password:'nengausiem2AQueiph8U',
-        //    useSSL: false
-        //});
+        //client.connect({onSuccess:onConnect});
+        client.connect({
+            onSuccess:onConnect,
+            onFailure: onFailure,
+            userName:'group_8',
+            password:'nengausiem2AQueiph8U',
+            useSSL: false
+        });
 
         function onFailure(args) {
             console.log("error");
@@ -51,9 +51,9 @@
             // Once a connection has been made, make a subscription and send a message.
             console.log("onConnect");
             client.subscribe("/actuatornetwork/8/actuator/display");
-            client.subscribe("/sensornetwork/8/sensor/brightness");
-            client.subscribe("/sensornetwork/8/sensor/temperature");
-            client.subscribe("/sensornetwork/8/sensor/humidity");
+            client.subscribe("/sensornetwork/+/sensor/brightness");
+            client.subscribe("/sensornetwork/+/sensor/temperature");
+            client.subscribe("/sensornetwork/+/sensor/humidity");
             //message = new Paho.MQTT.Message("Hello");
             //message.destinationName = "/actuatornetwork/8/actuator/display";
             //client.send(message);
@@ -133,12 +133,6 @@
         }
 
         function updateGraph() {
-            lux.push(luxLast);
-            temp.push(tempLast);
-            humidity.push(humidityLast);
-            time.push(getTimeStamp());
-            createChart();
-            counter = counter + 1;
             if (counter == 8) {
                 lux = [];
                 temp = [];
@@ -146,6 +140,12 @@
                 time = [];
                 counter = 0;
             }
+            lux.push(luxLast);
+            temp.push(tempLast);
+            humidity.push(humidityLast);
+            time.push(getTimeStamp());
+            createChart();
+            counter = counter + 1;
             setTimeout(updateGraph, 30000);
         }
 
