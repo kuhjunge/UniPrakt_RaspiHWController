@@ -14,14 +14,14 @@ import eu.selfhost.suxdorf.util.Configuration;
 
 public class G8Controller implements MessageProcessor {
 
-	private final static String serverAddr = "ServerAddress";
-	private final static String user = "user";
-	private final static String pw = "pw";
-	private final static String certPath = "cert";
+	private final static String SERVERADDR = "ServerAddress";
+	private final static String USER = "user";
+	private final static String PW = "pw";
+	private final static String CERTPATH = "cert";
+	private final static String DEBUGFEATURES = "debug";
 
 	private static final Logger LOG = Logger.getLogger(G8Controller.class.getName());
 	private static final String CONFIGFILE = "/app/"; // "/app/"
-	private static final boolean DEBUG = false;
 
 	public static void main(final String[] args) throws Exception {
 		new G8Controller(); // Starte
@@ -39,9 +39,9 @@ public class G8Controller implements MessageProcessor {
 			hwc = new HardwareControl(this);
 			// init mqtt client
 			// sends and gets lux values
-			client = new MQTTAsyncChat(conf.getValue(user), conf.getValue(pw), conf.getValue(serverAddr),
-					conf.getValue(certPath), "{\"message\": \"" + conf.getValue(user) + " out!\"}",
-					"/sensornetwork/" + conf.getValue(user) + "/status", conf.getValue(user) + Math.random());
+			client = new MQTTAsyncChat(conf.getValue(USER), conf.getValue(PW), conf.getValue(SERVERADDR),
+					conf.getValue(CERTPATH), "{\"message\": \"" + conf.getValue(USER) + " out!\"}",
+					"/sensornetwork/" + conf.getValue(USER) + "/status", conf.getValue(USER) + Math.random());
 			// set Communication interface
 			client.addNewMessageListener(this);
 			// connect
@@ -58,7 +58,7 @@ public class G8Controller implements MessageProcessor {
 			client.openChannel("/sensornetwork/3/sensor/indoor/temperature");
 			client.openChannel("/sensornetwork/3/sensor/indoor/humidity");
 			// DEBUG Feature um Werte zu simulieren
-			if (DEBUG) {
+			if (Boolean.getBoolean(conf.getValue(DEBUGFEATURES))) {
 				final Runnable task = () -> {
 					final Random random = new Random();
 					while (true) {
@@ -105,10 +105,11 @@ public class G8Controller implements MessageProcessor {
 	public void loadConfig() {
 		// Load Config
 		conf = new Configuration("MQTTDataDealer", CONFIGFILE);
-		conf.setValue(serverAddr, "tcp://127.0.0.1:1883");
-		conf.setValue(user, "admin");
-		conf.setValue(pw, "");
-		conf.setValue(certPath, "");
+		conf.setValue(SERVERADDR, "tcp://127.0.0.1:1883");
+		conf.setValue(USER, "admin");
+		conf.setValue(PW, "");
+		conf.setValue(CERTPATH, "");
+		conf.setValue(DEBUGFEATURES, Boolean.toString(false));
 		conf.init();
 		conf.save();
 	}

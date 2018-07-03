@@ -29,9 +29,7 @@ public class HardwareControl {
 	public static String PIN0 = "MyAnalogInput-CH0";
 	public static String PIN1 = "MyAnalogInput-CH1";
 	public static int dht22pin = 7;
-	private static final int MAXTIMINGS = 85;
 	public Pin ledpin = RaspiPin.GPIO_22;
-	private final int[] dht11_dat = { 0, 0, 0, 0, 0 };
 
 	// G8Controller
 	MessageProcessor mp;
