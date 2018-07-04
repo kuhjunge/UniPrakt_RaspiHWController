@@ -59,8 +59,9 @@ public class G8Controller implements MessageProcessor {
 			client.openChannel("/sensornetwork/3/sensor/indoor/humidity");
 			// DEBUG Feature um Werte zu simulieren
 			LOG.log(Level.WARNING, "Debug: " + conf.getValue(DEBUGFEATURES));
-			if (Boolean.getBoolean(conf.getValue(DEBUGFEATURES))) {
-				final Runnable task = () -> {
+			//if (Boolean.getBoolean(conf.getValue(DEBUGFEATURES))) {
+			if (true) {	
+			final Runnable task = () -> {
 					final Random random = new Random();
 					while (true) {
 						final String threadName = Thread.currentThread().getName();
