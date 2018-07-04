@@ -115,14 +115,18 @@
             return newDate.timeNow();
         }
 
-        function overlayOn() {
+        function overlayOn(timeout) {
             document.getElementById("overlay").style.display = "block";
-            setTimeout(overlayOff, 3000);
-        }
+            if (timeout == null){
+                setTimeout(overlayOff, 3000);
+            } else {
+                if (timeout > 9999) {
+                    setTimeout(overlayOff, 9999);
+                } else {
+                    setTimeout(overlayOff, timeout);
+                }
+            }
 
-        function overlayOnWithTimeout(timeout) {
-            document.getElementById("overlay").style.display = "block";
-            setTimeout(overlayOff, timeout);
         }
 
         function overlayOff() {
@@ -164,7 +168,11 @@
                 } else if ((obj.measurement_unit).localeCompare("Text") == 0) {
                     //console.log("Text value received: " + obj.value);
                     document.getElementById('text').innerHTML = obj.value;
-                    overlayOn();
+                    try {
+                        overlayOn(obj.duration);
+                    } catch(err) {
+                        overlayOn();
+                    }
                 } else if ((obj.measurement_unit).localeCompare("Celsius") == 0) {
                     //console.log("Temperature (Celsius) value received: " + obj.value);
                     /*temp.push(obj.value);
@@ -183,7 +191,7 @@
                     humidityLast = obj.value;
                 }
             } catch(err) {
-                
+
             }
         }
     </script>
