@@ -65,13 +65,13 @@ public class G8Controller implements MessageProcessor {
 						final String threadName = Thread.currentThread().getName();
 						LOG.log(Level.WARNING, threadName + " Polling");
 						// hwc.polling();
-						processMessageDoubleOut("/sensornetwork/3/sensor/indoor/temperature", random.nextInt(30) + 5,
+						processMessageDoubleOut("/sensornetwork/3/sensor/indoor/temperature", random.nextInt(50) + 5,
 								"Celsius");
-						processMessageDoubleOut("/sensornetwork/3/sensor/indoor/humidity", random.nextInt(30) + 40,
+						processMessageDoubleOut("/sensornetwork/3/sensor/indoor/humidity", random.nextInt(50) + 40,
 								"Percent");
-						processMessageDoubleOut("/actuatornetwork/8/actuator/display", "new Dataset", "Text");
+						processMessageDoubleOut("/actuatornetwork/8/actuator/display", "new Dataset" + random.nextInt(50), "Text");
 						try {
-							Thread.sleep(10000);
+							Thread.sleep(15000);
 
 						} catch (final InterruptedException e) {
 							LOG.log(Level.SEVERE, "Error Thread", e);
